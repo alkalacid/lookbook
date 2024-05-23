@@ -1,0 +1,7 @@
+.bsp
+.idea
+local_pgdata
+logs
+project/target
+project/project
+target

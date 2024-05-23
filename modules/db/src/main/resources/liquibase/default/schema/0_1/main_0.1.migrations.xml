@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+    <changeSet id="create Top table" author="dberezina">
+      <createTable tableName="Top">
+          <column name="id" type="text">
+            <constraints primaryKey="true" nullable="false"/>
+          </column>
+          <column name="name" type="text">
+              <constraints nullable="false"/>
+          </column>
+          <column name="image" type="text">
+              <constraints nullable="false"/>
+          </column>
+          <column name="isCoating" type="text">
+              <constraints nullable="false"/>
+          </column>
+          <column name="color" type="text">
+              <constraints nullable="false"/>
+          </column>
+          <column name="style" type="text">
+              <constraints nullable="false"/>
+          </column>
+          <column name="isSleeve" type="boolean">
+              <constraints nullable="false"/>
+          </column>
+          <column name="isDress" type="boolean">
+              <constraints nullable="false"/>
+          </column>
+          <column name="isWeird" type="boolean">
+              <constraints nullable="false"/>
+          </column>
+          <column name="isOpen" type="boolean">
+              <constraints nullable="false"/>
+          </column>
+          <column name="fashionability" type="int">
+              <constraints nullable="false"/>
+          </column>
+      </createTable>
+    </changeSet>
+
+    <changeSet id="create Bottom table" author="dberezina">
+        <createTable tableName="Bottom">
+            <column name="id" type="text">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="image" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="length" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="color" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="style" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="isWeird" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fashionability" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create Shoes table" author="dberezina">
+        <createTable tableName="Shoes">
+            <column name="id" type="text">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="image" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="color" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="style" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="isHeel" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="isWarm" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="isWeird" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="isHigh" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="isOpen" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fashionability" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

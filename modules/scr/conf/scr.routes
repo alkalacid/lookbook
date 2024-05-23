@@ -1,0 +1,16 @@
+GET    /look                    @controllers.LookController.generateLook()
+
+GET    /top                     @controllers.TopController.get()
+POST   /top                     @controllers.TopController.add()
+PUT    /top                     @controllers.TopController.update()
+DELETE /top                     @controllers.TopController.delete()
+
+GET    /bottom                  @controllers.BottomController.get()
+POST   /bottom                  @controllers.BottomController.add()
+PUT    /bottom                  @controllers.BottomController.update()
+DELETE /bottom                  @controllers.BottomController.delete()
+
+GET    /shoes                   @controllers.ShoesController.get()
+POST   /shoes                   @controllers.ShoesController.add()
+PUT    /shoes                   @controllers.ShoesController.update()
+DELETE /shoes                   @controllers.ShoesController.delete()
