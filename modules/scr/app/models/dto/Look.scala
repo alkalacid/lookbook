@@ -9,7 +9,8 @@ case class Look(
               var bottom: Option[Bottom] = None,
               var shoes: Option[Shoes] = None,
               var hasWeirdElement: Boolean = false,
-              var hasColor: Boolean = false
+              var hasColor: Boolean = false,
+              var length: String = "mid"
           )
 
 object Look {

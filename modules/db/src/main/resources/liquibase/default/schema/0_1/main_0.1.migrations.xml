@@ -40,6 +40,9 @@
           <column name="fashionability" type="int">
               <constraints nullable="false"/>
           </column>
+          <column name="length" type="text">
+              <constraints nullable="false"/>
+          </column>
       </createTable>
     </changeSet>
 

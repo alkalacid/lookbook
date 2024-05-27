@@ -15,7 +15,8 @@ case class Top(
               fashionability: Int = 0,
               isOpen: Boolean = false,
               color: String = "base",
-              style: String = "base"
+              style: String = "base",
+              length: String = "standard"
               ) extends KeyedEntity[String]
 
 object Top {
@@ -32,6 +33,7 @@ object Top {
             (JsPath \ "fashionability").write[Int] and
             (JsPath \ "isOpen").write[Boolean] and
             (JsPath \ "color").write[String] and
-            (JsPath \ "style").write[String]
+            (JsPath \ "style").write[String] and
+            (JsPath \ "length").write[String]
         )(unlift(Top.unapply))
 }

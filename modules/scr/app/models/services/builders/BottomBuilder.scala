@@ -13,6 +13,8 @@ trait BottomBuilder extends Builder[String, Bottom]
 class BottomBuilderImpl @Inject()(val bottomRepository: BottomRepositoryImpl) extends BottomBuilder {
 
     private def noMiniFilter(): Bottom => LogicalBoolean = _.length <> "mini"
+    private def noMidFilter(): Bottom => LogicalBoolean = _.length <> "mid"
+    private def noMidiFilter(): Bottom => LogicalBoolean = _.length <> "midi"
     private def sportStyleFilter(): Bottom => LogicalBoolean = _.style === "sport"
     private def highFashionabilityFilter(): Bottom => LogicalBoolean = _.fashionability gte 50
     private def fashionabilityFilter(): Bottom => LogicalBoolean = _.fashionability gt 0
@@ -22,6 +24,7 @@ class BottomBuilderImpl @Inject()(val bottomRepository: BottomRepositoryImpl) ex
 
     override def generate(look: Look, filterByWeather: String, filterByEvent: String): Look = {
         if (look.top.get.isDress) {
+            look.length = look.top.get.length
             look
         } else {
             val filters = getFilters(look, filterByWeather, filterByEvent)
@@ -54,6 +57,12 @@ class BottomBuilderImpl @Inject()(val bottomRepository: BottomRepositoryImpl) ex
                 filters ::= fashionabilityFilter()
             }
         }
+        if (look.coating.isDefined) {
+            if (look.coating.get.length == "hip" || look.top.get.length == "hip") {
+                filters ::= noMidFilter()
+                filters ::= noMidiFilter()
+            }
+        }
         if (look.hasColor) {
             filters ::= baseColorBottomFilter()
         }
@@ -71,6 +80,7 @@ class BottomBuilderImpl @Inject()(val bottomRepository: BottomRepositoryImpl) ex
         if (look.bottom.get.color != "base") {
             look.hasColor = true
         }
+        look.length = look.bottom.get.length
         look
     }
 }

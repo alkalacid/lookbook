@@ -69,16 +69,16 @@ class ShoesBuilderImpl @Inject()(val shoesRepository: ShoesRepositoryImpl) exten
             }
         }
 
-        if (look.bottom.isDefined) {
-            look.bottom.get.length match {
-                case "mini" =>
-                    if (filterByEvent != "celebrate") {
-                        filters ::= noHeelsFilter()
-                    }
-                case "max"|"midi" =>
-                    filters ::= noHighShoesFilter()
-                case _ => filters
-            }
+        look.length match {
+            case "mini" =>
+                if (filterByEvent != "celebrate") {
+                    filters ::= noHeelsFilter()
+                }
+            case "max" => filters ::= noHighShoesFilter()
+            case "midi" =>
+                filters ::= noHighShoesFilter()
+                filters ::= heelsFilter()
+            case _ => filters
         }
 
         if(look.hasWeirdElement || filterByEvent == "celebrate" || filterByEvent == "fashion") {
