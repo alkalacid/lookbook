@@ -18,11 +18,6 @@ class ShoesBuilderImpl @Inject()(val shoesRepository: ShoesRepositoryImpl) exten
     private def noHeelsFilter(): Shoes => LogicalBoolean = _.isHeel === false
     private def heelsFilter(): Shoes => LogicalBoolean = _.isHeel === true
     private def noHighShoesFilter(): Shoes => LogicalBoolean = _.isHigh === false
-    private def highFashionabilityFilter(): Shoes => LogicalBoolean = _.fashionability gte 50
-    private def fashionabilityFilter(): Shoes => LogicalBoolean = _.fashionability gt 0
-
-    private def noWeirdShoesFilter(): Shoes => LogicalBoolean = _.isWeird === false
-    private def baseColorShoesFilter(): Shoes => LogicalBoolean = _.color === "base"
 
     override def generate(look: Look, filterByWeather: String, filterByEvent: String): Look = {
         if (filterByWeather == "winter" || filterByWeather == "room") {
@@ -82,10 +77,10 @@ class ShoesBuilderImpl @Inject()(val shoesRepository: ShoesRepositoryImpl) exten
         }
 
         if(look.hasWeirdElement || filterByEvent == "celebrate" || filterByEvent == "fashion") {
-            filters ::= noWeirdShoesFilter()
+            filters ::= noWeirdFilter()
         }
         if(look.hasColor) {
-            filters ::= baseColorShoesFilter()
+            filters ::= baseColorFilter()
         }
 
         filters

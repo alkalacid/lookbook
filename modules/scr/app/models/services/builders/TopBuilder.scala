@@ -14,10 +14,6 @@ class TopBuilderImpl @Inject()(val topRepository: TopRepositoryImpl) extends Top
 
     private def noSleevesFilter(): Top => LogicalBoolean = _.isSleeve === false
     private def noCoatingFilter(): Top => LogicalBoolean = _.isCoating <> "onlyCoating"
-    private def noWeirdTopFilter(): Top => LogicalBoolean = _.isWeird === false
-    private def sportStyleFilter(): Top => LogicalBoolean = _.style === "sport"
-    private def highFashionabilityFilter(): Top => LogicalBoolean = _.fashionability gte 50
-    private def fashionabilityFilter(): Top => LogicalBoolean = _.fashionability gt 0
 
     override def generate(look: Look, filterByWeather: String, filterByEvent: String): Look = {
         val filters = getFilters(look, filterByWeather, filterByEvent)
@@ -34,7 +30,7 @@ class TopBuilderImpl @Inject()(val topRepository: TopRepositoryImpl) extends Top
         }
 
         if ((filterByEvent == "celebrate") || filterByEvent == "fashion") {
-            filters ::= noWeirdTopFilter()
+            filters ::= noWeirdFilter()
         }
 
         if (filterByEvent == "relax") {

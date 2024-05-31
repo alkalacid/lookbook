@@ -15,12 +15,6 @@ class BottomBuilderImpl @Inject()(val bottomRepository: BottomRepositoryImpl) ex
     private def noMiniFilter(): Bottom => LogicalBoolean = _.length <> "mini"
     private def noMidFilter(): Bottom => LogicalBoolean = _.length <> "mid"
     private def noMidiFilter(): Bottom => LogicalBoolean = _.length <> "midi"
-    private def sportStyleFilter(): Bottom => LogicalBoolean = _.style === "sport"
-    private def highFashionabilityFilter(): Bottom => LogicalBoolean = _.fashionability gte 50
-    private def fashionabilityFilter(): Bottom => LogicalBoolean = _.fashionability gt 0
-
-    private def noWeirdBottomFilter(): Bottom => LogicalBoolean = _.isWeird === false
-    private def baseColorBottomFilter(): Bottom => LogicalBoolean = _.color === "base"
 
     override def generate(look: Look, filterByWeather: String, filterByEvent: String): Look = {
         if (look.top.get.isDress) {
@@ -41,7 +35,7 @@ class BottomBuilderImpl @Inject()(val bottomRepository: BottomRepositoryImpl) ex
     override def getFilters(look: Look, filterByWeather: String, filterByEvent: String): List[Bottom => LogicalBoolean] = {
         var filters: List[Bottom => LogicalBoolean] = List.empty
         if (look.hasWeirdElement || filterByEvent == "celebrate" || filterByEvent == "fashion") {
-            filters ::= noWeirdBottomFilter()
+            filters ::= noWeirdFilter()
         }
         if (filterByEvent == "relax") {
             val rand: Int = Random.nextInt(2)
@@ -64,7 +58,7 @@ class BottomBuilderImpl @Inject()(val bottomRepository: BottomRepositoryImpl) ex
             }
         }
         if (look.hasColor) {
-            filters ::= baseColorBottomFilter()
+            filters ::= baseColorFilter()
         }
         if (look.top.get.isOpen) {
             filters ::= noMiniFilter()

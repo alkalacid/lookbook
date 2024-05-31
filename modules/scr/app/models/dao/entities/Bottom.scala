@@ -1,19 +1,18 @@
 package models.dao.entities
 
-import org.squeryl.KeyedEntity
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{JsPath, Json, Reads, Writes}
 
 case class Bottom(
-              id: String,
-              name: String,
-              image: String = "",
-              length: String = "mini",
-              isWeird: Boolean = false,
-              fashionability: Int = 0,
-              color: String = "base",
-              style: String = "base"
-              ) extends KeyedEntity[String]
+                   override val id: String,
+                   override val name: String,
+                   override val image: String = "",
+                   length: String = "mini",
+                   override val isWeird: Boolean = false,
+                   override val fashionability: Int = 0,
+                   override val color: String = "base",
+                   override val style: String = "base"
+              ) extends LookElement
 
 object Bottom {
     implicit val reads: Reads[Bottom] = Json.reads[Bottom]

@@ -1,22 +1,21 @@
 package models.dao.entities
 
-import org.squeryl.KeyedEntity
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{JsPath, Json, Reads, Writes}
 
 case class Shoes(
-              id: String,
-              name: String,
-              image: String = "",
-              isHeel: Boolean = false,
-              isWarm: Boolean = false,
-              isHigh: Boolean = false,
-              isWeird: Boolean = false,
-              fashionability: Int = 0,
-              isOpen: Boolean = false,
-              color: String = "base",
-              style: String = "base"
-              ) extends KeyedEntity[String]
+                  override val id: String,
+                  override val name: String,
+                  override val image: String = "",
+                  isHeel: Boolean = false,
+                  isWarm: Boolean = false,
+                  isHigh: Boolean = false,
+                  override val isWeird: Boolean = false,
+                  override val fashionability: Int = 0,
+                  isOpen: Boolean = false,
+                  override val color: String = "base",
+                  override val style: String = "base"
+              ) extends LookElement
 
 object Shoes {
     implicit val reads: Reads[Shoes] = Json.reads[Shoes]
