@@ -18,7 +18,7 @@ class TopBuilderImpl @Inject()(val topRepository: TopRepositoryImpl) extends Top
     override def generate(look: Look, filterByWeather: String, filterByEvent: String): Look = {
         val filters = getFilters(look, filterByWeather, filterByEvent)
         look.top = Some(Random.shuffle(topRepository.filter(filters=filters)).head)
-        checkOut(look)
+        checkOut(look, look.top)
     }
 
     override def getFilters(look: Look, filterByWeather: String, filterByEvent: String): List[Top => LogicalBoolean] = {
@@ -29,36 +29,6 @@ class TopBuilderImpl @Inject()(val topRepository: TopRepositoryImpl) extends Top
             filters ::= noSleevesFilter()
         }
 
-        if ((filterByEvent == "celebrate") || filterByEvent == "fashion") {
-            filters ::= noWeirdFilter()
-        }
-
-        if (filterByEvent == "relax") {
-            val rand: Int = Random.nextInt(2)
-            if (rand == 2) {
-                filters ::= sportStyleFilter()
-            }
-        }
-
-        if (filterByEvent == "fashion") {
-            val rand: Int = Random.nextInt(2)
-            if (rand == 2) {
-                filters ::= highFashionabilityFilter()
-            } else {
-                filters ::= fashionabilityFilter()
-            }
-        }
-
-        filters
-    }
-
-    private def checkOut(look: Look): Look = {
-        if (look.top.get.isWeird) {
-            look.hasWeirdElement = true
-        }
-        if (look.top.get.color != "base") {
-            look.hasColor = true
-        }
-        look
+        getFiltersByEvent(filterByEvent) ::: getFilterByRelaxEvent(filterByEvent) ::: filters
     }
 }

@@ -26,55 +26,26 @@ class BottomBuilderImpl @Inject()(val bottomRepository: BottomRepositoryImpl) ex
             if (filters.nonEmpty) {
                 look.bottom = Some(Random.shuffle(bottomRepository.filter(filters = filters)).head)
             } else {
-                look.bottom =Some(Random.shuffle(bottomRepository.list()).head)
+                look.bottom = Some(Random.shuffle(bottomRepository.list()).head)
             }
-            checkOut(look)
+            look.length = look.bottom.get.length
+            checkOut(look, look.bottom)
         }
     }
 
     override def getFilters(look: Look, filterByWeather: String, filterByEvent: String): List[Bottom => LogicalBoolean] = {
-        var filters: List[Bottom => LogicalBoolean] = List.empty
-        if (look.hasWeirdElement || filterByEvent == "celebrate" || filterByEvent == "fashion") {
-            filters ::= noWeirdFilter()
-        }
-        if (filterByEvent == "relax") {
-            val rand: Int = Random.nextInt(2)
-            if (rand == 2) {
-                filters ::= sportStyleFilter()
-            }
-        }
-        if (filterByEvent == "fashion") {
-            val rand: Int = Random.nextInt(2)
-            if (rand == 2) {
-                filters ::= highFashionabilityFilter()
-            } else {
-                filters ::= fashionabilityFilter()
-            }
-        }
+        var filters: List[Bottom => LogicalBoolean] = checkIn(look)
+
         if (look.coating.isDefined) {
             if (look.coating.get.length == "hip" || look.top.get.length == "hip") {
                 filters ::= noMidFilter()
                 filters ::= noMidiFilter()
             }
         }
-        if (look.hasColor) {
-            filters ::= baseColorFilter()
-        }
         if (look.top.get.isOpen) {
             filters ::= noMiniFilter()
         }
 
-        filters
-    }
-
-    private def checkOut(look: Look): Look = {
-        if (look.bottom.get.isWeird) {
-            look.hasWeirdElement = true
-        }
-        if (look.bottom.get.color != "base") {
-            look.hasColor = true
-        }
-        look.length = look.bottom.get.length
-        look
+        getFiltersByEvent(filterByEvent) ::: getFilterByRelaxEvent(filterByEvent) ::: filters
     }
 }

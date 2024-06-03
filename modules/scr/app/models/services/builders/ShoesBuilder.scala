@@ -14,7 +14,7 @@ class ShoesBuilderImpl @Inject()(val shoesRepository: ShoesRepositoryImpl) exten
 
     private def warmShoesFilter(): Shoes => LogicalBoolean = _.isWarm === true
     private def noWarmShoesFilter(): Shoes => LogicalBoolean = _.isWarm === false
-    private def nOpenShoesFilter(): Shoes => LogicalBoolean = _.isOpen === false
+    private def noOpenShoesFilter(): Shoes => LogicalBoolean = _.isOpen === false
     private def noHeelsFilter(): Shoes => LogicalBoolean = _.isHeel === false
     private def heelsFilter(): Shoes => LogicalBoolean = _.isHeel === true
     private def noHighShoesFilter(): Shoes => LogicalBoolean = _.isHigh === false
@@ -30,22 +30,12 @@ class ShoesBuilderImpl @Inject()(val shoesRepository: ShoesRepositoryImpl) exten
             } else {
                 look.shoes =Some(Random.shuffle(shoesRepository.list()).head)
             }
-            checkOut(look)
+            checkOut(look, look.shoes)
         }
     }
 
     override def getFilters(look: Look, filterByWeather: String, filterByEvent: String): List[Shoes => LogicalBoolean] = {
-        var filters: List[Shoes => LogicalBoolean] = List.empty
-        filterByWeather match {
-            case "cold" =>
-                filters ::= warmShoesFilter()
-            case "warm" =>
-                filters ::= noWarmShoesFilter()
-                filters ::= nOpenShoesFilter()
-            case "heat" =>
-                filters ::= noWarmShoesFilter()
-            case _ => filters
-        }
+        var filters: List[Shoes => LogicalBoolean] = checkIn(look) ::: getFiltersByWeather(filterByWeather)
 
         if (filterByEvent == "celebrate") {
             filters ::= heelsFilter()
@@ -55,44 +45,21 @@ class ShoesBuilderImpl @Inject()(val shoesRepository: ShoesRepositoryImpl) exten
             filters ::= noHeelsFilter()
         }
 
-        if (filterByEvent == "fashion") {
-            val rand: Int = Random.nextInt(2)
-            if (rand == 2) {
-                filters ::= highFashionabilityFilter()
-            } else {
-                filters ::= fashionabilityFilter()
-            }
-        }
-
-        look.length match {
-            case "mini" =>
-                if (filterByEvent != "celebrate") {
-                    filters ::= noHeelsFilter()
-                }
-            case "max" => filters ::= noHighShoesFilter()
-            case "midi" =>
-                filters ::= noHighShoesFilter()
-                filters ::= heelsFilter()
-            case _ => filters
-        }
-
-        if(look.hasWeirdElement || filterByEvent == "celebrate" || filterByEvent == "fashion") {
-            filters ::= noWeirdFilter()
-        }
-        if(look.hasColor) {
-            filters ::= baseColorFilter()
-        }
-
-        filters
+        getFiltersByEvent(filterByEvent) ::: getFiltersByLength(look.length, filterByEvent)::: filters
     }
 
-    private def checkOut(look: Look): Look = {
-        if (look.shoes.get.isWeird) {
-            look.hasWeirdElement = true
-        }
-        if (look.shoes.get.color != "base") {
-            look.hasColor = true
-        }
-        look
+    private def getFiltersByWeather(weather: String): List[Shoes => LogicalBoolean] = weather match {
+        case "cold" => List(warmShoesFilter())
+        case "warm" => List(noWarmShoesFilter(), noOpenShoesFilter())
+        case "heat" => List(noWarmShoesFilter())
+        case _ => List()
+    }
+
+    private def getFiltersByLength(length: String, event: String): List[Shoes => LogicalBoolean] = length match {
+        case "mini" =>
+            if (event != "celebrate") List(noHeelsFilter()) else List()
+        case "max" => List(noHighShoesFilter())
+        case "midi" => if (event != "relax") List(noHighShoesFilter(), heelsFilter()) else List(noHighShoesFilter())
+        case _ => List()
     }
 }

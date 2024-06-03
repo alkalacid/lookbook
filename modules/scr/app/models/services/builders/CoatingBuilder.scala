@@ -20,40 +20,14 @@ class CoatingBuilderImpl @Inject()(val topRepository: TopRepositoryImpl) extends
         } else {
             val filters = getFilters(look, filterByWeather, filterByEvent)
             look.coating = Some(Random.shuffle(topRepository.filter(filters=filters)).head)
-            checkOut(look)
+            checkOut(look, look.coating)
         }
 
     }
 
     override def getFilters(look: Look, filterByWeather: String, filterByEvent: String): List[Top => LogicalBoolean] = {
-        var filters: List[Top => LogicalBoolean] = List.empty
+        var filters: List[Top => LogicalBoolean] = checkIn(look)
         filters ::= coatingFilter()
-
-        if (look.hasWeirdElement || filterByEvent == "celebrate" || filterByEvent == "fashion") {
-            filters ::= noWeirdFilter()
-        }
-        if (filterByEvent == "fashion") {
-            val rand: Int = Random.nextInt(2)
-            if (rand == 2) {
-                filters ::= highFashionabilityFilter()
-            } else {
-                filters ::= fashionabilityFilter()
-            }
-        }
-        if (look.hasColor) {
-            filters ::= baseColorFilter()
-        }
-
-        filters
-    }
-
-    private def checkOut(look: Look): Look = {
-        if (look.coating.get.isWeird) {
-            look.hasWeirdElement = true
-        }
-        if (look.coating.get.color != "base") {
-            look.hasColor = true
-        }
-        look
+        filters ::: getFiltersByEvent(filterByEvent)
     }
 }
