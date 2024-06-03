@@ -6,9 +6,8 @@ import models.dao.repositories.TopRepositoryImpl
 import models.dto.Look
 import org.squeryl.dsl.ast.LogicalBoolean
 import org.squeryl.PrimitiveTypeMode._
-import scala.util.Random
 
-trait TopBuilder extends Builder[String, Top]
+trait TopBuilder extends Builder[String, Top, TopRepositoryImpl]
 
 class TopBuilderImpl @Inject()(val topRepository: TopRepositoryImpl) extends TopBuilder {
 
@@ -17,8 +16,14 @@ class TopBuilderImpl @Inject()(val topRepository: TopRepositoryImpl) extends Top
 
     override def generate(look: Look, filterByWeather: String, filterByEvent: String): Look = {
         val filters = getFilters(look, filterByWeather, filterByEvent)
-        look.top = Some(Random.shuffle(topRepository.filter(filters=filters)).head)
-        checkOut(look, look.top)
+        val top: Option[Top] = getElementFromDatabase(filters)(topRepository)
+
+        if(top.isEmpty) {
+            throw new Exception("No top was found")
+        } else {
+            look.top = top
+            checkOut(look, look.top)
+        }
     }
 
     override def getFilters(look: Look, filterByWeather: String, filterByEvent: String): List[Top => LogicalBoolean] = {

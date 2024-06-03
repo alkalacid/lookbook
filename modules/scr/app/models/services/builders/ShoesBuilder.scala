@@ -6,9 +6,8 @@ import models.dao.repositories.ShoesRepositoryImpl
 import models.dto.Look
 import org.squeryl.PrimitiveTypeMode._
 import org.squeryl.dsl.ast.LogicalBoolean
-import scala.util.Random
 
-trait ShoesBuilder extends Builder[String, Shoes]
+trait ShoesBuilder extends Builder[String, Shoes, ShoesRepositoryImpl]
 
 class ShoesBuilderImpl @Inject()(val shoesRepository: ShoesRepositoryImpl) extends ShoesBuilder {
 
@@ -24,11 +23,12 @@ class ShoesBuilderImpl @Inject()(val shoesRepository: ShoesRepositoryImpl) exten
             look
         } else {
             val filters = getFilters(look, filterByWeather, filterByEvent)
+            val shoes: Option[Shoes] = getElementFromDatabase(filters)(shoesRepository)
 
-            if (filters.nonEmpty) {
-                look.shoes = Some(Random.shuffle(shoesRepository.filter(filters = filters)).head)
+            if(shoes.isEmpty) {
+                throw new Exception("No shoes was found")
             } else {
-                look.shoes =Some(Random.shuffle(shoesRepository.list()).head)
+                look.shoes = shoes
             }
             checkOut(look, look.shoes)
         }

@@ -6,9 +6,8 @@ import models.dao.repositories.TopRepositoryImpl
 import models.dto.Look
 import org.squeryl.dsl.ast.LogicalBoolean
 import org.squeryl.PrimitiveTypeMode._
-import scala.util.Random
 
-trait CoatingBuilder extends Builder[String, Top]
+trait CoatingBuilder extends Builder[String, Top, TopRepositoryImpl]
 
 class CoatingBuilderImpl @Inject()(val topRepository: TopRepositoryImpl) extends CoatingBuilder {
 
@@ -19,10 +18,16 @@ class CoatingBuilderImpl @Inject()(val topRepository: TopRepositoryImpl) extends
             look
         } else {
             val filters = getFilters(look, filterByWeather, filterByEvent)
-            look.coating = Some(Random.shuffle(topRepository.filter(filters=filters)).head)
+            val coating: Option[Top] = getElementFromDatabase(filters)(topRepository)
+
+            if(coating.isEmpty) {
+                throw new Exception("No coating was found")
+            } else {
+                look.coating = coating
+            }
+
             checkOut(look, look.coating)
         }
-
     }
 
     override def getFilters(look: Look, filterByWeather: String, filterByEvent: String): List[Top => LogicalBoolean] = {

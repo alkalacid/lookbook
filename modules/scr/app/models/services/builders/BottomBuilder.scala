@@ -6,28 +6,29 @@ import models.dao.repositories.BottomRepositoryImpl
 import models.dto.Look
 import org.squeryl.PrimitiveTypeMode._
 import org.squeryl.dsl.ast.LogicalBoolean
-import scala.util.Random
 
-trait BottomBuilder extends Builder[String, Bottom]
+trait BottomBuilder extends Builder[String, Bottom, BottomRepositoryImpl]
 
 class BottomBuilderImpl @Inject()(val bottomRepository: BottomRepositoryImpl) extends BottomBuilder {
 
-    private def noMiniFilter(): Bottom => LogicalBoolean = _.length <> "mini"
     private def noMidFilter(): Bottom => LogicalBoolean = _.length <> "mid"
     private def noMidiFilter(): Bottom => LogicalBoolean = _.length <> "midi"
+    private def noMaxFilter(): Bottom => LogicalBoolean = _.length <> "max"
 
     override def generate(look: Look, filterByWeather: String, filterByEvent: String): Look = {
         if (look.top.get.isDress) {
             look.length = look.top.get.length
             look
         } else {
-            val filters = getFilters(look, filterByWeather, filterByEvent)
+            val filters: List[Bottom => LogicalBoolean] = getFilters(look, filterByWeather, filterByEvent)
+            val bottom: Option[Bottom] = getElementFromDatabase(filters)(bottomRepository)
 
-            if (filters.nonEmpty) {
-                look.bottom = Some(Random.shuffle(bottomRepository.filter(filters = filters)).head)
+            if(bottom.isEmpty) {
+                throw new Exception("No bottom was found")
             } else {
-                look.bottom = Some(Random.shuffle(bottomRepository.list()).head)
+                look.bottom = bottom
             }
+
             look.length = look.bottom.get.length
             checkOut(look, look.bottom)
         }
@@ -36,16 +37,18 @@ class BottomBuilderImpl @Inject()(val bottomRepository: BottomRepositoryImpl) ex
     override def getFilters(look: Look, filterByWeather: String, filterByEvent: String): List[Bottom => LogicalBoolean] = {
         var filters: List[Bottom => LogicalBoolean] = checkIn(look)
 
-        if (look.coating.isDefined) {
-            if (look.coating.get.length == "hip" || look.top.get.length == "hip") {
-                filters ::= noMidFilter()
-                filters ::= noMidiFilter()
-            }
-        }
-        if (look.top.get.isOpen) {
-            filters ::= noMiniFilter()
+        if (filterByWeather == "heat") {
+            filters ::= noMaxFilter()
         }
 
-        getFiltersByEvent(filterByEvent) ::: getFilterByRelaxEvent(filterByEvent) ::: filters
+        getFiltersByLength(look) ::: getFiltersByEvent(filterByEvent) ::: getFilterByRelaxEvent(filterByEvent) ::: filters
+    }
+
+    private def getFiltersByLength(look: Look): List[Bottom => LogicalBoolean] = {
+        if (look.top.get.length == "hip" || (
+          look.coating.isDefined && look.coating.get.length == "hip"
+          )) {
+            List(noMidFilter(), noMidiFilter())
+        } else List.empty
     }
 }

@@ -1,18 +1,20 @@
 package models.services.builders
 
 import models.dao.entities.LookElement
+import models.dao.repositories.CrudRepository
 import models.dto.Look
 import org.squeryl.KeyedEntity
 import org.squeryl.dsl.ast.LogicalBoolean
 import org.squeryl.PrimitiveTypeMode._
+
 import scala.util.Random
 
-trait Builder[K, Entity <: KeyedEntity[K]] {
-    protected def noWeirdFilter(): LookElement => LogicalBoolean = _.isWeird === false
-    protected def baseColorFilter(): LookElement => LogicalBoolean = _.color === "base"
-    protected def sportStyleFilter(): LookElement => LogicalBoolean = _.style === "sport"
-    protected def highFashionabilityFilter(): LookElement => LogicalBoolean = _.fashionability gte 50
-    protected def fashionabilityFilter(): LookElement => LogicalBoolean = _.fashionability gt 0
+trait Builder[K, Entity <: KeyedEntity[K], Repository <: CrudRepository[K, Entity]] {
+    private def noWeirdFilter(): LookElement => LogicalBoolean = _.isWeird === false
+    private def baseColorFilter(): LookElement => LogicalBoolean = _.color === "base"
+    private def sportStyleFilter(): LookElement => LogicalBoolean = _.style === "sport"
+    private def highFashionabilityFilter(): LookElement => LogicalBoolean = _.fashionability gte 50
+    private def fashionabilityFilter(): LookElement => LogicalBoolean = _.fashionability gt 0
 
     def generate(look: Look, filterByWeather: String, filterByEvent: String): Look
     protected def getFilters(look: Look, filterByWeather: String, filterByEvent: String): List[Entity => LogicalBoolean]
@@ -64,5 +66,14 @@ trait Builder[K, Entity <: KeyedEntity[K]] {
         }
 
         filters
+    }
+
+    protected def getElementFromDatabase(filters: List[Entity => LogicalBoolean])
+                                        (implicit repository: Repository): Option[Entity] = {
+        if (filters.nonEmpty) {
+            Random.shuffle(repository.filter(filters = filters)).headOption
+        } else {
+            Random.shuffle(repository.list()).headOption
+        }
     }
 }
