@@ -11,44 +11,49 @@ trait BottomBuilder extends Builder[String, Bottom, BottomRepositoryImpl]
 
 class BottomBuilderImpl @Inject()(val bottomRepository: BottomRepositoryImpl) extends BottomBuilder {
 
-    private def noMidFilter(): Bottom => LogicalBoolean = _.length <> "mid"
-    private def noMidiFilter(): Bottom => LogicalBoolean = _.length <> "midi"
-    private def noMaxFilter(): Bottom => LogicalBoolean = _.length <> "max"
+  private def noMidFilter(): Bottom => LogicalBoolean = _.length <> "mid"
+  private def noMidiFilter(): Bottom => LogicalBoolean = _.length <> "midi"
+  private def noMaxFilter(): Bottom => LogicalBoolean = _.length <> "max"
 
-    override def generate(look: Look, filterByWeather: String, filterByEvent: String): Look = {
-        if (look.top.get.isDress) {
-            look.length = look.top.get.length
-            look
-        } else {
-            val filters: List[Bottom => LogicalBoolean] = getFilters(look, filterByWeather, filterByEvent)
-            val bottom: Option[Bottom] = getElementFromDatabase(filters)(bottomRepository)
+  override def generate(look: Look, filterByWeather: String, filterByEvent: String): Look = {
 
-            if(bottom.isEmpty) {
-                throw new Exception("No bottom was found")
-            } else {
-                look.bottom = bottom
-            }
+    if (look.top.get.isDress) {
+      look.length = look.top.get.length
+      look
+    } else {
 
-            look.length = look.bottom.get.length
-            checkOut(look, look.bottom)
-        }
+      val filters: List[Bottom => LogicalBoolean] = getFilters(look, filterByWeather, filterByEvent)
+      val bottom: Option[Bottom] = getElementFromDatabase(filters)(bottomRepository)
+
+      if(bottom.isEmpty) {
+        throw new Exception("No bottom was found")
+      } else {
+        look.bottom = bottom
+      }
+
+      look.length = look.bottom.get.length
+      checkOut(look, look.bottom)
+    }
+  }
+
+  override def getFilters(look: Look, filterByWeather: String, filterByEvent: String): List[Bottom => LogicalBoolean] = {
+
+    val filters = if (filterByWeather == "heat") {
+      noMaxFilter() :: checkIn(look)
+    } else {
+      checkIn(look)
     }
 
-    override def getFilters(look: Look, filterByWeather: String, filterByEvent: String): List[Bottom => LogicalBoolean] = {
-        var filters: List[Bottom => LogicalBoolean] = checkIn(look)
+    getFiltersByLength(look) ::: getFiltersByEvent(filterByEvent) ::: getFilterByRelaxEvent(filterByEvent) ::: filters
+  }
 
-        if (filterByWeather == "heat") {
-            filters ::= noMaxFilter()
-        }
+  private def getFiltersByLength(look: Look): List[Bottom => LogicalBoolean] = {
 
-        getFiltersByLength(look) ::: getFiltersByEvent(filterByEvent) ::: getFilterByRelaxEvent(filterByEvent) ::: filters
-    }
+    if (look.top.get.length == "hip" || (
+      look.coating.isDefined && look.coating.get.length == "hip"
+      )) {
+      List(noMidFilter(), noMidiFilter())
+    } else List.empty
 
-    private def getFiltersByLength(look: Look): List[Bottom => LogicalBoolean] = {
-        if (look.top.get.length == "hip" || (
-          look.coating.isDefined && look.coating.get.length == "hip"
-          )) {
-            List(noMidFilter(), noMidiFilter())
-        } else List.empty
-    }
+  }
 }

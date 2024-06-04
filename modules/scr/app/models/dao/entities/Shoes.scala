@@ -14,7 +14,7 @@ case class Shoes(
                   isOpen: Boolean = false,
                   override val color: String = "base",
                   override val style: String = "base"
-              ) extends LookElement
+              ) extends ClothingItem
 
 object Shoes {
     implicit val reads: Reads[Shoes] = Json.reads[Shoes]

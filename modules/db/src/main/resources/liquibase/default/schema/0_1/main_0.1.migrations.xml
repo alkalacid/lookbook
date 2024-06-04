@@ -113,4 +113,67 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="create Hairstyle table" author="dberezina">
+        <createTable tableName="Hairstyle">
+            <column name="id" type="text">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="image" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="stylingDegree" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="isWeird" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create Makeup table" author="dberezina">
+        <createTable tableName="Makeup">
+            <column name="id" type="text">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="image" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="style" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="area" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="isWeird" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create Jewelry table" author="dberezina">
+        <createTable tableName="Jewelry">
+            <column name="id" type="text">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="image" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="isWeird" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="area" type="text">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
 </databaseChangeLog>
