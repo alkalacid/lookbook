@@ -2,7 +2,9 @@ package models.dao.entities
 
 import org.squeryl.KeyedEntity
 
-class DecoratorItem extends KeyedEntity[String] {
+import scala.language.implicitConversions
+
+class LookBookItem extends KeyedEntity[String] {
   override def id: String = ""
   def name: String = ""
   def image: String = ""

@@ -18,6 +18,6 @@ trait CrudRepository[K, Entity <: KeyedEntity[K]] extends PrimitiveTypeMode{
   def update(entity: Entity): Unit = transaction(defaultTable.update(entity))
   def delete(entity: Entity): Unit = transaction(defaultTable.delete(entity.id))
 
-  protected def combineFilters(filters: List[Entity => LogicalBoolean]): Entity => LogicalBoolean =
+  private def combineFilters(filters: List[Entity => LogicalBoolean]): Entity => LogicalBoolean =
     e => filters.foldLeft[LogicalBoolean](1 === 1)((acc, f) => acc and f(e))
 }

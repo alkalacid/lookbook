@@ -3,7 +3,7 @@ package models.dto
 import models.dao.entities.{Bottom, Hairstyle, Jewelry, Makeup, Shoes, Top}
 import play.api.libs.json.{Json, Reads, Writes}
 
-case class Look(
+case class LookGeneratorDTO(
                  var top: Option[Top] = None,
                  var bottom: Option[Bottom] = None,
                  var shoes: Option[Shoes] = None,
@@ -16,7 +16,7 @@ case class Look(
                  var length: String = "mid"
           )
 
-object Look {
-    implicit val reads: Reads[Look] = Json.reads[Look]
-    implicit val writes: Writes[Look] = Json.writes[Look]
+object LookGeneratorDTO {
+    implicit val reads: Reads[LookGeneratorDTO] = Json.reads[LookGeneratorDTO]
+    implicit val writes: Writes[LookGeneratorDTO] = Json.writes[LookGeneratorDTO]
 }

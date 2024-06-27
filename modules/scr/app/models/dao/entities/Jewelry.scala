@@ -8,7 +8,7 @@ case class Jewelry(
                 override val image: String = "",
                 override val isWeird: Boolean = false,
                 area: String = "neck"
-              ) extends DecoratorItem
+              ) extends LookBookItem
 
 object Jewelry {
     implicit val reads: Reads[Jewelry] = Json.reads[Jewelry]

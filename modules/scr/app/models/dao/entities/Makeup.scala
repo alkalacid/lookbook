@@ -9,7 +9,7 @@ case class Makeup(
                 style: String = "base",
                 area: String = "eyes",
                 override val isWeird: Boolean = false
-              ) extends DecoratorItem
+              ) extends LookBookItem
 
 object Makeup {
     implicit val reads: Reads[Makeup] = Json.reads[Makeup]

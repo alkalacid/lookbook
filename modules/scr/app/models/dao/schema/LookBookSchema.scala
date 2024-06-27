@@ -1,6 +1,6 @@
 package models.dao.schema
 
-import models.dao.entities.{Bottom, Hairstyle, Jewelry, Makeup, Shoes, Top}
+import models.dao.entities._
 import org.squeryl.{KeyedEntity, Schema, Table}
 
 object LookBookSchema extends Schema{
@@ -10,6 +10,7 @@ object LookBookSchema extends Schema{
     val hairstyle: Table[Hairstyle] = table[Hairstyle]
     val makeup: Table[Makeup] = table[Makeup]
     val jewelry: Table[Jewelry] = table[Jewelry]
+    val looks: Table[Look] = table[Look]
 
     def get(clothingType: String = "top"): Table[_ <: KeyedEntity[String]] = clothingType match {
         case "top" => tops
@@ -18,5 +19,6 @@ object LookBookSchema extends Schema{
         case "hairstyle" => hairstyle
         case "makeup" => makeup
         case "jewelry" => jewelry
+        case "look" => looks
     }
 }

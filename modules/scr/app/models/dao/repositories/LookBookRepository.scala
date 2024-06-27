@@ -1,6 +1,6 @@
 package models.dao.repositories
 
-import models.dao.entities.{Bottom, Hairstyle, Jewelry, Makeup, Shoes, Top}
+import models.dao.entities._
 import models.dao.schema.LookBookSchema
 import org.squeryl.Table
 

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+    <changeSet id="create Look table" author="dberezina">
+        <createTable tableName="Look">
+            <column name="id" type="text">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="top" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="bottom" type="text">
+                <constraints nullable="true"/>
+            </column>
+            <column name="shoes" type="text">
+                <constraints nullable="true"/>
+            </column>
+            <column name="coating" type="text">
+                <constraints nullable="true"/>
+            </column>
+            <column name="hairstyle" type="text">
+                <constraints nullable="true"/>
+            </column>
+            <column name="makeup" type="text">
+                <constraints nullable="true"/>
+            </column>
+            <column name="weather" type="text">
+                <constraints nullable="true"/>
+            </column>
+            <column name="event" type="text">
+                <constraints nullable="true"/>
+            </column>
+            <column name="comment" type="text">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="top"
+                                 baseTableName="Look"
+                                 constraintName="fk_Look_top_Top_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="Top"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"/>
+        <addForeignKeyConstraint baseColumnNames="bottom"
+                                 baseTableName="Look"
+                                 constraintName="fk_Look_bottom_Bottom_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="Bottom"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"/>
+        <addForeignKeyConstraint baseColumnNames="shoes"
+                                 baseTableName="Look"
+                                 constraintName="fk_Look_shoes_Shoes_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="Shoes"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"/>
+        <addForeignKeyConstraint baseColumnNames="coating"
+                                 baseTableName="Look"
+                                 constraintName="fk_Look_coating_Top_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="Top"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"/>
+        <addForeignKeyConstraint baseColumnNames="hairstyle"
+                                 baseTableName="Look"
+                                 constraintName="fk_Look_hairstyle_Hairstyle_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="Hairstyle"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"/>
+        <addForeignKeyConstraint baseColumnNames="makeup"
+                                 baseTableName="Look"
+                                 constraintName="fk_Look_makeup_Makeup_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="Makeup"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"/>
+
+    </changeSet>
+
+</databaseChangeLog>

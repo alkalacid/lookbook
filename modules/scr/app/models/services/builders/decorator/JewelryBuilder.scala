@@ -3,7 +3,7 @@ package models.services.builders.decorator
 import com.google.inject.Inject
 import models.dao.entities.Jewelry
 import models.dao.repositories.JewelryRepositoryImpl
-import models.dto.Look
+import models.dto.LookGeneratorDTO
 import org.squeryl.dsl.ast.LogicalBoolean
 import org.squeryl.PrimitiveTypeMode._
 
@@ -14,16 +14,19 @@ trait JewelryBuilder extends DecoratorBuilder[Jewelry, JewelryRepositoryImpl]
 
 class JewelryBuilderImpl @Inject()(val jewelryRepository: JewelryRepositoryImpl) extends JewelryBuilder {
 
-  private def noHandsJewelryFilter(): Jewelry => LogicalBoolean = _.area <> "hands"
+  private val areaHands = "hands"
+  private val areaEars = "ears"
 
-  override def generate(look: Look, queryFilters: Map[String, Seq[String]]): Look = {
-      if (Random.nextInt(2) == 1 || queryFilters("event").head == "celebrate") {
+  private def noHandsJewelryFilter(): Jewelry => LogicalBoolean = _.area <> areaHands
+
+  override def generate(look: LookGeneratorDTO, queryFilters: Map[String, Seq[String]]): LookGeneratorDTO = {
+      if (Random.nextInt(2) == 1 || queryFilters("event").head == eventCelebrate) {
           val filters = getFilters(look, queryFilters)
           val queryList: List[Jewelry] = getJewelryFromDatabase(filters)
 
           if (queryList.isEmpty) {
             look
-          } else if (queryFilters("event").head == "relax") {
+          } else if (queryFilters("event").head == eventRelax) {
             look.jewelry = List(queryList(1))
             look
           } else {
@@ -41,12 +44,12 @@ class JewelryBuilderImpl @Inject()(val jewelryRepository: JewelryRepositoryImpl)
         }
   }
 
-  override protected def getFilters(look: Look, queryFilters: Map[String, Seq[String]]): List[Jewelry => LogicalBoolean] = {
-    var filters: List[Jewelry => LogicalBoolean] = checkIn(look)
+  override protected def getFilters(look: LookGeneratorDTO, queryFilters: Map[String, Seq[String]]): List[Jewelry => LogicalBoolean] = {
     if (look.top.get.isSleeve) {
-      filters ::= noHandsJewelryFilter()
+      List(List(noHandsJewelryFilter()), checkIn(look)).flatten
+    } else {
+      checkIn(look)
     }
-    filters
   }
 
   private def getJewelryFromDatabase(filters: List[Jewelry => LogicalBoolean]): List[Jewelry] = {
@@ -59,16 +62,16 @@ class JewelryBuilderImpl @Inject()(val jewelryRepository: JewelryRepositoryImpl)
 
   @tailrec
   private def filterJewelry(jewelryList: List[Jewelry], resultList: List[Jewelry], limit: Int, acc: Int = 1): List[Jewelry] = {
-    if (resultList.length != limit) {
+    if (resultList.length == limit) {
+      resultList
+    } else {
       val newItem: Jewelry = jewelryList(acc)
       val newAcc: Int = acc + 1
-      if (resultList.exists(j => j.area == "ears") && newItem.area == "ears") {
+      if (resultList.exists(j => j.area == areaEars) && newItem.area == areaEars) {
         filterJewelry(jewelryList, resultList, limit, newAcc)
       } else {
         filterJewelry(jewelryList, newItem :: resultList, limit, newAcc)
       }
-    } else {
-      resultList
     }
   }
 }

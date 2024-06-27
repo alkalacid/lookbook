@@ -14,3 +14,18 @@ GET    /shoes                   @controllers.ShoesController.get()
 POST   /shoes                   @controllers.ShoesController.add()
 PUT    /shoes                   @controllers.ShoesController.update()
 DELETE /shoes                   @controllers.ShoesController.delete()
+
+GET    /hairstyle               @controllers.HairstyleController.get()
+POST   /hairstyle               @controllers.HairstyleController.add()
+PUT    /hairstyle               @controllers.HairstyleController.update()
+DELETE /hairstyle               @controllers.HairstyleController.delete()
+
+GET    /makeup                  @controllers.MakeupController.get()
+POST   /makeup                  @controllers.MakeupController.add()
+PUT    /makeup                  @controllers.MakeupController.update()
+DELETE /makeup                  @controllers.MakeupController.delete()
+
+GET    /jewelry                 @controllers.JewelryController.get()
+POST   /jewelry                 @controllers.JewelryController.add()
+PUT    /jewelry                 @controllers.JewelryController.update()
+DELETE /jewelry                 @controllers.JewelryController.delete()
