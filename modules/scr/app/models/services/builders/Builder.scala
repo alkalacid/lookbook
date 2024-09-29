@@ -3,7 +3,6 @@ package models.services.builders
 import models.dao.entities.LookBookItem
 import models.dao.repositories.CrudRepository
 import models.dto.LookGeneratorDTO
-import org.squeryl.PrimitiveTypeMode._
 import org.squeryl.dsl.ast.LogicalBoolean
 
 import scala.util.Random
@@ -18,6 +17,10 @@ trait Builder[Entity <: LookBookItem, Repository <: CrudRepository[String, Entit
 
   protected val eventRelax = "relax"
   protected val eventCelebrate = "celebrate"
+  protected val eventFashion = "celebrate"
+
+  protected val colorBase = "base"
+  protected val styleSport = "sport"
 
   def generate(look: LookGeneratorDTO, filters: Map[String, Seq[String]]): LookGeneratorDTO
   protected def getFilters(look: LookGeneratorDTO, filters: Map[String, Seq[String]]): List[Entity => LogicalBoolean]

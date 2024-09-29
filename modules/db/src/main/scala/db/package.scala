@@ -5,15 +5,16 @@ import liquibase.database.jvm.JdbcConnection
 import liquibase.resource.{ClassLoaderResourceAccessor, CompositeResourceAccessor, FileSystemResourceAccessor}
 import liquibase.servicelocator.LiquibaseService
 import org.squeryl.adapters.{H2Adapter, PostgreSqlAdapter}
+import org.squeryl.internals.DatabaseAdapter
 
 
 package object db {
   private val configuration = ConfigFactory.load()
   private val config = new HikariConfig()
 
-  val url = configuration.getString("db.default.url")
-  val user = configuration.getString("db.default.user")
-  val password = configuration.getString("db.default.password")
+  private val url: String = configuration.getString("db.default.url")
+  private val user: String = configuration.getString("db.default.user")
+  private val password: String = configuration.getString("db.default.password")
   config.setJdbcUrl(url)
   config.setUsername(user)
   config.setPassword(password)
@@ -22,7 +23,7 @@ package object db {
 
   object SquerylConfig
   {
-    lazy val dbDefaultAdapter = configuration.getString("db.default.driver") match
+    lazy val dbDefaultAdapter: DatabaseAdapter = configuration.getString("db.default.driver") match
     {
       case "org.h2.Driver" => new H2Adapter
       case "org.postgresql.Driver" => new PostgreSqlAdapter
@@ -30,7 +31,7 @@ package object db {
     }
 
 
-    lazy val logSql = configuration.getBoolean("log-sql")
+    lazy val logSql: Boolean = configuration.getBoolean("log-sql")
   }
 
   object Liqui{

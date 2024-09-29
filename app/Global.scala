@@ -7,9 +7,9 @@ import play.api.{Application, GlobalSettings, Logger}
 
 object Global extends GlobalSettings{
 
-  val appModules = List("module.ScrModule")
+  private val appModules: List[String] = List("module.ScrModule")
 
-  lazy val injector = {
+  private lazy val injector = {
     val moduleClasses = appModules.map{cn =>
       play.api.Play.current.classloader.loadClass(cn)
     }
@@ -27,7 +27,7 @@ object Global extends GlobalSettings{
 
   }
 
-  private def initializeSqueryl() {
+  private def initializeSqueryl(): Unit = {
     SessionFactory.concreteFactory = Some(() =>
     {
       val s = getSession(SquerylConfig.dbDefaultAdapter)
@@ -39,7 +39,7 @@ object Global extends GlobalSettings{
   private def getSession(adapter: DatabaseAdapter) =
     Session.create(db.hikariDataSource.getConnection, adapter)
 
-  private def performMigration() = {
+  private def performMigration(): Unit = {
     val liqui = Liqui.mkLiquibase
     liqui.update("dev")
   }

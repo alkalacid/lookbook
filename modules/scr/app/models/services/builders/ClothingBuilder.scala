@@ -17,8 +17,8 @@ trait ClothingBuilder[Entity <: ClothingItem, Repository <: CrudRepository[Strin
   protected val lengthHip = "hip"
 
   private def noWeirdFilter(): ClothingItem => LogicalBoolean = _.isWeird === false
-  private def baseColorFilter(): ClothingItem => LogicalBoolean = _.color === "base"
-  private def sportStyleFilter(): ClothingItem => LogicalBoolean = _.style === "sport"
+  private def baseColorFilter(): ClothingItem => LogicalBoolean = _.color === colorBase
+  private def sportStyleFilter(): ClothingItem => LogicalBoolean = _.style === styleSport
   private def highFashionabilityFilter(): ClothingItem => LogicalBoolean = _.fashionability gte 50
   private def fashionabilityFilter(): ClothingItem => LogicalBoolean = _.fashionability gt 0
 
@@ -34,15 +34,15 @@ trait ClothingBuilder[Entity <: ClothingItem, Repository <: CrudRepository[Strin
   protected def checkOut(look: LookGeneratorDTO, lookPiece: Option[ClothingItem]): LookGeneratorDTO = lookPiece match {
     case Some(x) =>
       if (x.isWeird) look.hasWeirdElement = true
-      if (x.color != "base") look.hasColor = true
+      if (x.color != colorBase) look.hasColor = true
       look
     case _ => look
   }
 
   protected def getFiltersByEvent(event: String): List[ClothingItem => LogicalBoolean] = {
-    val noWeird = if ((event == "celebrate") || event == "fashion") List(noWeirdFilter()) else Nil
+    val noWeird = if ((event == eventCelebrate) || event == eventFashion) List(noWeirdFilter()) else Nil
 
-    val fashionFilter = if (event == "fashion") {
+    val fashionFilter = if (event == eventFashion) {
       if (Random.nextInt(3) == 2) {
         List(highFashionabilityFilter())
       } else {
@@ -54,7 +54,7 @@ trait ClothingBuilder[Entity <: ClothingItem, Repository <: CrudRepository[Strin
   }
 
   protected def getFilterByRelaxEvent(event: String): List[ClothingItem => LogicalBoolean] = {
-    if (event == "relax" && Random.nextInt(3) == 2) {
+    if (event == eventRelax && Random.nextInt(3) == 2) {
       List(sportStyleFilter())
     } else {
       List.empty

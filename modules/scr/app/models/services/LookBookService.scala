@@ -31,7 +31,7 @@ class LookBookServiceImpl @Inject()(
               filters),
             filters),
           filters),
-        filters), 
+        filters),
       filters)
   }
 }

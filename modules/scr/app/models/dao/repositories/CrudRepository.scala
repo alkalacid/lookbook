@@ -11,7 +11,7 @@ trait CrudRepository[K, Entity <: KeyedEntity[K]] extends PrimitiveTypeMode{
     from(defaultTable)(e => select(e)).toList
   )
   def filter(filters: List[Entity => LogicalBoolean]): List[Entity] = transaction{
-    from(defaultTable)(e => where(combineFilters(filters)(e)) select(e)).toList
+    from(defaultTable)(e => where(combineFilters(filters)(e)) select e).toList
   }
   def find(id: K): Option[Entity] = transaction(defaultTable.lookup(id))
   def insert(entity: Entity): Entity = transaction(defaultTable.insert(entity))

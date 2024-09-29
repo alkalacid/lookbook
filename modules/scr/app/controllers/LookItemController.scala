@@ -3,14 +3,14 @@ package controllers
 import models.dao.entities.LookBookItem
 import models.dao.repositories.CrudRepository
 import play.api.libs.json.{Json, Reads, Writes}
-import play.api.mvc.{Action, Controller}
+import play.api.mvc.{Action, AnyContent, Controller}
 
 import scala.language.implicitConversions
 
 class LookItemController[Entity <: LookBookItem, Repository <: CrudRepository[String, Entity]]
   (val repository: Repository) (implicit reads: Reads[Entity], writes: Writes[Entity]) extends Controller {
 
-  def get = Action{
+  def get: Action[AnyContent] = Action{
     Ok(Json.toJson(repository.list()))
   }
 
