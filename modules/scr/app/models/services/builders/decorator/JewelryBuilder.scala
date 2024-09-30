@@ -34,7 +34,7 @@ class JewelryBuilderImpl @Inject()(val jewelryRepository: JewelryRepositoryImpl)
             look.jewelry = Random.nextInt(12) match {
               case i if i < 6 => filterJewelry(queryList, List(), 1)
               case i if i < 10 => filterJewelry(queryList, List(), 2)
-              case 11 => filterJewelry(queryList, List(), 3)
+              case 10 | 11 => filterJewelry(queryList, List(), 3)
             }
 
             look

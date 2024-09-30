@@ -83,4 +83,32 @@
 
     </changeSet>
 
+    <changeSet id="create JewelryToLook table" author="dberezina">
+        <createTable tableName="JewelryToLook">
+            <column name="id" type="text">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="jewelry" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="look" type="text">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="jewelry"
+                                 baseTableName="JewelryToLook"
+                                 constraintName="fk_JewelryToLook_jewelry_Jewelry_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="Jewelry"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"/>
+        <addForeignKeyConstraint baseColumnNames="look"
+                                 baseTableName="JewelryToLook"
+                                 constraintName="fk_JewelryToLook_look_Look_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="Look"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"/>
+    </changeSet>
+
 </databaseChangeLog>

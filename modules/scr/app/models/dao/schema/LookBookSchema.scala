@@ -11,6 +11,7 @@ object LookBookSchema extends Schema{
     val makeup: Table[Makeup] = table[Makeup]
     val jewelry: Table[Jewelry] = table[Jewelry]
     val looks: Table[Look] = table[Look]
+    val jewelryToLook: Table[JewelryToLook] = table[JewelryToLook]
 
     def get(clothingType: String = "top"): Table[_ <: KeyedEntity[String]] = clothingType match {
         case "top" => tops
@@ -20,5 +21,6 @@ object LookBookSchema extends Schema{
         case "makeup" => makeup
         case "jewelry" => jewelry
         case "look" => looks
+        case "jewelryToLook" => jewelryToLook
     }
 }

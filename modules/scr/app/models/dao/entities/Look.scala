@@ -3,8 +3,10 @@ package models.dao.entities
 import org.squeryl.KeyedEntity
 import play.api.libs.json.{Json, Reads, Writes}
 
+import java.util.UUID
+
 case class Look(
-                 id: String = "",
+                 id: String = UUID.randomUUID.toString.replaceAll("-", ""),
                  top: Option[String] = None,
                  bottom: Option[String] = None,
                  shoes: Option[String] = None,
@@ -13,7 +15,7 @@ case class Look(
                  makeup: Option[String] = None,
                  weather: Option[String] = None,
                  event: Option[String] = None,
-                 var comment: Option[String] = None
+                 comment: Option[String] = None
           ) extends KeyedEntity[String]
 
 object Look {

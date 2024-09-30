@@ -1,4 +1,8 @@
 GET    /look                    @controllers.LookController.generateLook()
+POST   /look                    @controllers.LookController.add()
+PUT    /look                    @controllers.LookController.update()
+DELETE /look                    @controllers.LookController.delete()
+GET    /looks                   @controllers.LookController.list()
 
 GET    /top                     @controllers.TopController.get()
 POST   /top                     @controllers.TopController.add()
