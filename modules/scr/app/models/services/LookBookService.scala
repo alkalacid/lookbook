@@ -8,7 +8,9 @@ import models.services.builders.decorator._
 import models.services.builders._
 
 trait LookBookService {
-  def generateLook(filters: Map[String, Seq[String]]): LookGeneratorDTO
+  def generateLook(weather: String = "any",
+                   event: String = "any",
+                   tailDay: String = "low"): LookGeneratorDTO
 
   def add(look: LookDTO): Look
 
@@ -26,21 +28,30 @@ class LookBookServiceImpl @Inject()(
                                      val lookRepository: LookRepositoryImpl,
                                      val jewelryToLookRepository: JewelryToLookRepositoryImpl
                                    ) extends LookBookService {
+  val builders: List[AbstractBuilder] = List(
+    topBuilder,
+    coatingBuilder,
+    bottomBuilder,
+    shoesBuilder,
+    hairstyleBuilder,
+    makeupBuilder,
+    jewelryBuilder
+  )
 
-  def generateLook(filters: Map[String, Seq[String]]): LookGeneratorDTO = {
-    jewelryBuilder.generate(
-      makeupBuilder.generate(
-        hairstyleBuilder.generate(
-          shoesBuilder.generate(
-            bottomBuilder.generate(
-              coatingBuilder.generate(
-                topBuilder.generate(new LookGeneratorDTO, filters),
-                filters),
-              filters),
-            filters),
-          filters),
-        filters),
-      filters)
+  def generateLook(weather: String = "any",
+                   event: String = "any",
+                   tailDay: String = "low"): LookGeneratorDTO = {
+
+    @tailrec
+    def recursiveGenerateLook(builders: List[AbstractBuilder], look: LookGeneratorDTO): LookGeneratorDTO= builders match {
+          case head :: tail =>
+            val newLook = head.generate(look)
+            recursiveGenerateLook(tail, newLook)
+
+          case Nil => look
+    }
+
+    recursiveGenerateLook(builders, new LookGeneratorDTO(weather = weather, event = event, tailDay = tailDay))
   }
 
   override def add(look: LookDTO): Look = {

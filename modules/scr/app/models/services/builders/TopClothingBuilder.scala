@@ -11,13 +11,15 @@ trait TopClothingBuilder extends ClothingBuilder[Top, TopRepositoryImpl]
 
 class TopClothingBuilderImpl @Inject()(val topRepository: TopRepositoryImpl) extends TopClothingBuilder {
 
+  val builderName: String = "top"
+
   private val topOnlyCoating = "onlyCoating"
 
   private def noSleevesFilter(): Top => LogicalBoolean = _.isSleeve === false
   private def noCoatingFilter(): Top => LogicalBoolean = _.isCoating <> topOnlyCoating
 
-  override def generate(look: LookGeneratorDTO, queryFilters: Map[String, Seq[String]]): LookGeneratorDTO = {
-    val filters = getFilters(look, queryFilters)
+  override def generate(look: LookGeneratorDTO): LookGeneratorDTO = {
+    val filters = getFilters(look)
     val top: Option[Top] = getElementFromDatabase(filters, topRepository)
 
     if(top.isEmpty) {
@@ -32,15 +34,15 @@ class TopClothingBuilderImpl @Inject()(val topRepository: TopRepositoryImpl) ext
     }
   }
 
-  override def getFilters(look: LookGeneratorDTO, queryFilters: Map[String, Seq[String]]): List[Top => LogicalBoolean] = {
+  override def getFilters(look: LookGeneratorDTO): List[Top => LogicalBoolean] = {
 
-    val filters = if (queryFilters("weather").head == weatherHeat) {
+    val filters = if (look.weather == weatherHeat) {
       List(noCoatingFilter(), noSleevesFilter())
     } else {
       List(noCoatingFilter())
     }
 
-    val filterByEvent = queryFilters("event").head
+    val filterByEvent = look.event
     List(getFiltersByEvent(filterByEvent), getFilterByRelaxEvent(filterByEvent), filters).flatten
 
   }

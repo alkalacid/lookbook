@@ -11,17 +11,19 @@ trait BottomClothingBuilder extends ClothingBuilder[Bottom, BottomRepositoryImpl
 
 class BottomClothingBuilderImpl @Inject()(val bottomRepository: BottomRepositoryImpl) extends BottomClothingBuilder {
 
+  val builderName: String = "bottom"
+
   private def noMidFilter(): Bottom => LogicalBoolean = _.length <> lengthMid
   private def noMidiFilter(): Bottom => LogicalBoolean = _.length <> lengthMidi
   private def noMaxFilter(): Bottom => LogicalBoolean = _.length <> lengthMax
 
-  override def generate(look: LookGeneratorDTO, queryFilters: Map[String, Seq[String]]): LookGeneratorDTO = {
+  override def generate(look: LookGeneratorDTO): LookGeneratorDTO = {
 
     if (look.hasDress) {
       look
     } else {
 
-      val filters: List[Bottom => LogicalBoolean] = getFilters(look, queryFilters: Map[String, Seq[String]])
+      val filters: List[Bottom => LogicalBoolean] = getFilters(look)
       val bottom: Option[Bottom] = getElementFromDatabase(filters, bottomRepository)
 
       if(bottom.isEmpty) {
@@ -35,15 +37,15 @@ class BottomClothingBuilderImpl @Inject()(val bottomRepository: BottomRepository
     }
   }
 
-  override def getFilters(look: LookGeneratorDTO, queryFilters: Map[String, Seq[String]]): List[Bottom => LogicalBoolean] = {
+  override def getFilters(look: LookGeneratorDTO): List[Bottom => LogicalBoolean] = {
 
-    val filters = if (queryFilters("weather").head == weatherHeat) {
+    val filters = if (look.weather == weatherHeat) {
       noMaxFilter() :: checkIn(look)
     } else {
       checkIn(look)
     }
 
-    val filterByEvent = queryFilters("event").head
+    val filterByEvent = look.event
     List(getFiltersByLength(look), getFiltersByEvent(filterByEvent), getFilterByRelaxEvent(filterByEvent), filters).flatten
   }
 

@@ -13,9 +13,13 @@ class LookController @Inject()(
                                 val lookRepository: LookRepositoryImpl
                               ) extends Controller {
 
-  def generateLook(): Action[AnyContent] = Action{ implicit request =>
+  def generateLook(
+                  weather: String = "any",
+                  event: String = "any",
+                  tailDay: String = "low"
+                  ): Action[AnyContent] = Action{ implicit request =>
     try {
-      Ok(Json.toJson(lookBookService.generateLook(request.queryString)))
+      Ok(Json.toJson(lookBookService.generateLook(weather, event, tailDay)))
     } catch {
       case e: Exception => NotFound(e.getMessage)
     }

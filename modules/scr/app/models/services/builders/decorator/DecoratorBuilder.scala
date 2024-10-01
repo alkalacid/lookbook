@@ -10,7 +10,7 @@ import org.squeryl.PrimitiveTypeMode._
 trait DecoratorBuilder[Entity <: LookBookItem, Repository <: CrudRepository[String, Entity]] extends Builder[Entity, Repository] {
   private def noWeirdFilter(): LookBookItem => LogicalBoolean = _.isWeird === false
 
-  protected def getFilters(look: LookGeneratorDTO, filters: Map[String, Seq[String]]): List[Entity => LogicalBoolean] = {
+  protected def getFilters(look: LookGeneratorDTO): List[Entity => LogicalBoolean] = {
     checkIn(look)
   }
 

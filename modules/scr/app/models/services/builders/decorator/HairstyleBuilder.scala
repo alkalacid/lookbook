@@ -13,6 +13,8 @@ trait HairstyleBuilder extends DecoratorBuilder[Hairstyle, HairstyleRepositoryIm
 
 class HairstyleBuilderImpl @Inject()(val hairstyleRepository: HairstyleRepositoryImpl) extends HairstyleBuilder {
 
+    val builderName: String = "hairstyle"
+
     private val tailDayLow = "low"
     private val tailDayMedium = "medium"
     private val tailDayHigh = "high"
@@ -21,9 +23,9 @@ class HairstyleBuilderImpl @Inject()(val hairstyleRepository: HairstyleRepositor
     private def noHighStylingFilter(): Hairstyle => LogicalBoolean = _.stylingDegree lt 8
     private def someStylingFilter(): Hairstyle => LogicalBoolean = _.stylingDegree gt 0
 
-    override def generate(look: LookGeneratorDTO, queryFilters: Map[String, Seq[String]]): LookGeneratorDTO = {
-        if (Random.nextInt(3) == 2 || queryFilters("tailDay").head != tailDayLow) {
-            val filters = getFilters(look, queryFilters)
+    override def generate(look: LookGeneratorDTO): LookGeneratorDTO = {
+        if (Random.nextInt(3) == 2 || look.tailDay != tailDayLow) {
+            val filters = getFilters(look)
             val hairstyle: Option[Hairstyle] = getElementFromDatabase(filters, hairstyleRepository)
 
             if (hairstyle.isEmpty) {
@@ -37,8 +39,8 @@ class HairstyleBuilderImpl @Inject()(val hairstyleRepository: HairstyleRepositor
         }
     }
 
-    override def getFilters(look: LookGeneratorDTO, queryFilters: Map[String, Seq[String]]): List[Hairstyle => LogicalBoolean] = {
-        List(getFiltersByTailDay(queryFilters("tailDay").head), checkIn(look)).flatten
+    override def getFilters(look: LookGeneratorDTO): List[Hairstyle => LogicalBoolean] = {
+        List(getFiltersByTailDay(look.tailDay), checkIn(look)).flatten
     }
 
     private def getFiltersByTailDay(tailDay: String): List[Hairstyle => LogicalBoolean] = tailDay match {

@@ -11,6 +11,8 @@ trait ShoesClothingBuilder extends ClothingBuilder[Shoes, ShoesRepositoryImpl]
 
 class ShoesClothingBuilderImpl @Inject()(val shoesRepository: ShoesRepositoryImpl) extends ShoesClothingBuilder {
 
+  val builderName: String = "shoes"
+
   private def warmShoesFilter(): Shoes => LogicalBoolean = _.isWarm === true
   private def noWarmShoesFilter(): Shoes => LogicalBoolean = _.isWarm === false
   private def noOpenShoesFilter(): Shoes => LogicalBoolean = _.isOpen === false
@@ -18,13 +20,13 @@ class ShoesClothingBuilderImpl @Inject()(val shoesRepository: ShoesRepositoryImp
   private def heelsFilter(): Shoes => LogicalBoolean = _.isHeel === true
   private def noHighShoesFilter(): Shoes => LogicalBoolean = _.isHigh === false
 
-  override def generate(look: LookGeneratorDTO, queryFilters: Map[String, Seq[String]]): LookGeneratorDTO = {
+  override def generate(look: LookGeneratorDTO): LookGeneratorDTO = {
 
-    if (queryFilters("weather").head == weatherWinter || queryFilters("weather").head == weatherRoom) {
+    if (look.weather == weatherWinter || look.weather == weatherRoom) {
       look
     } else {
 
-      val filters = getFilters(look, queryFilters: Map[String, Seq[String]])
+      val filters = getFilters(look)
       val shoes: Option[Shoes] = getElementFromDatabase(filters, shoesRepository)
 
       if(shoes.isEmpty) {
@@ -36,12 +38,12 @@ class ShoesClothingBuilderImpl @Inject()(val shoesRepository: ShoesRepositoryImp
     }
   }
 
-  override def getFilters(look: LookGeneratorDTO, queryFilters: Map[String, Seq[String]]): List[Shoes => LogicalBoolean] = {
+  override def getFilters(look: LookGeneratorDTO): List[Shoes => LogicalBoolean] = {
     List(checkIn(look),
-      getFiltersByWeather(queryFilters("weather").head),
-      getFiltersByEvent(queryFilters("event").head),
-      getFiltersByLength(look.length, queryFilters("event").head),
-      getHeelsFiltersByEvent(queryFilters("event").head)).flatten
+      getFiltersByWeather(look.weather),
+      getFiltersByEvent(look.event),
+      getFiltersByLength(look),
+      getHeelsFiltersByEvent(look.weather)).flatten
   }
 
   private def getFiltersByWeather(weather: String): List[Shoes => LogicalBoolean] = weather match {
@@ -51,11 +53,11 @@ class ShoesClothingBuilderImpl @Inject()(val shoesRepository: ShoesRepositoryImp
     case _ => List()
   }
 
-  private def getFiltersByLength(length: String, event: String): List[Shoes => LogicalBoolean] = length match {
+  private def getFiltersByLength(look: LookGeneratorDTO): List[Shoes => LogicalBoolean] = look.length match {
     case this.lengthMini =>
-      if (event != eventCelebrate) List(noHeelsFilter()) else List()
+      if (look.event != eventCelebrate) List(noHeelsFilter()) else List()
     case this.lengthMax => List(noHighShoesFilter())
-    case this.lengthMidi => if (event != eventRelax) List(noHighShoesFilter(), heelsFilter()) else List(noHighShoesFilter())
+    case this.lengthMidi => if (look.event != eventRelax) List(noHighShoesFilter(), heelsFilter()) else List(noHighShoesFilter())
     case _ => List()
   }
 

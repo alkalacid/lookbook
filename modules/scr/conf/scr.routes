@@ -1,4 +1,4 @@
-GET    /look                    @controllers.LookController.generateLook()
+GET    /look                    @controllers.LookController.generateLook(weather: String, event: String, tailDay: String)
 POST   /look                    @controllers.LookController.add()
 PUT    /look                    @controllers.LookController.update()
 DELETE /look                    @controllers.LookController.delete()

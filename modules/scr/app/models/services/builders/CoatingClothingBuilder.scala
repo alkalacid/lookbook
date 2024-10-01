@@ -7,20 +7,27 @@ import models.dto.LookGeneratorDTO
 import org.squeryl.dsl.ast.LogicalBoolean
 import org.squeryl.PrimitiveTypeMode._
 
+import scala.util.Random
+
 trait CoatingClothingBuilder extends ClothingBuilder[Top, TopRepositoryImpl]
 
 class CoatingClothingBuilderImpl @Inject()(val topRepository: TopRepositoryImpl) extends CoatingClothingBuilder {
+
+  val builderName: String = "coating"
 
   private val topNoCoating = "noCoating"
 
   private def coatingFilter(): Top => LogicalBoolean = _. isCoating <> topNoCoating
   private def noDressFilter(): Top => LogicalBoolean = _.isDress === false
+  private def dressFilter(): Top => LogicalBoolean = _.isDress === true
 
-  override def generate(look: LookGeneratorDTO, queryFilters: Map[String, Seq[String]]): LookGeneratorDTO = {
-    if (look.top.get.isSleeve || queryFilters("weather").head == weatherHeat) {
+  override def generate(look: LookGeneratorDTO): LookGeneratorDTO = {
+    if (look.weather == weatherHeat) {
+      look
+    } else if (look.top.get.isSleeve && Random.nextInt(4) != 1) {
       look
     } else {
-      val filters = getFilters(look, queryFilters: Map[String, Seq[String]])
+      val filters = getFilters(look)
       val coating: Option[Top] = getElementFromDatabase(filters, topRepository)
 
       if(coating.isEmpty) {
@@ -38,11 +45,13 @@ class CoatingClothingBuilderImpl @Inject()(val topRepository: TopRepositoryImpl)
     }
   }
 
-  override def getFilters(look: LookGeneratorDTO, queryFilters: Map[String, Seq[String]]): List[Top => LogicalBoolean] = {
+  override def getFilters(look: LookGeneratorDTO): List[Top => LogicalBoolean] = {
     if (look.hasDress) {
-      List(noDressFilter() :: coatingFilter() :: checkIn(look), getFiltersByEvent(queryFilters("event").head)).flatten
+      List(noDressFilter() :: coatingFilter() :: checkIn(look), getFiltersByEvent(look.event)).flatten
+    } else if (look.top.get.isSleeve) {
+      List(dressFilter() :: coatingFilter() :: checkIn(look), getFiltersByEvent(look.event)).flatten
     } else {
-      List(coatingFilter() :: checkIn(look), getFiltersByEvent(queryFilters("event").head)).flatten
+      List(coatingFilter() :: checkIn(look), getFiltersByEvent(look.event)).flatten
     }
 
   }

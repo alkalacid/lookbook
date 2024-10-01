@@ -10,19 +10,21 @@ trait MakeupBuilder extends DecoratorBuilder[Makeup, MakeupRepositoryImpl]
 
 class MakeupBuilderImpl @Inject()(val makeupRepository: MakeupRepositoryImpl) extends MakeupBuilder {
 
-    override def generate(look: LookGeneratorDTO, queryFilters: Map[String, Seq[String]]): LookGeneratorDTO = {
-        if (Random.nextInt(3) == 2 || queryFilters("event").head == eventCelebrate) {
-            val filters = getFilters(look, queryFilters)
-            val makeup: Option[Makeup] = getElementFromDatabase(filters, makeupRepository)
+  val builderName: String = "makeup"
 
-            if (makeup.isEmpty) {
-                throw new Exception("No makeup was found")
-            } else {
-                look.makeup = makeup
-                checkOut(look, look.makeup)
-            }
-        } else {
-            look
+  override def generate(look: LookGeneratorDTO): LookGeneratorDTO = {
+      if (Random.nextInt(3) == 2 || look.event == eventCelebrate) {
+          val filters = getFilters(look)
+          val makeup: Option[Makeup] = getElementFromDatabase(filters, makeupRepository)
+
+          if (makeup.isEmpty) {
+              throw new Exception("No makeup was found")
+          } else {
+              look.makeup = makeup
+              checkOut(look, look.makeup)
           }
-    }
+      } else {
+          look
+        }
+  }
 }
