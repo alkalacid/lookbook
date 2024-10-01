@@ -24,6 +24,10 @@ class TopClothingBuilderImpl @Inject()(val topRepository: TopRepositoryImpl) ext
       throw new Exception("No top was found")
     } else {
       look.top = top
+      look.length = top.get.length
+      if(top.get.isDress) {
+        look.hasDress = true
+      }
       checkOut(look, look.top)
     }
   }

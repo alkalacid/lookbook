@@ -17,8 +17,7 @@ class BottomClothingBuilderImpl @Inject()(val bottomRepository: BottomRepository
 
   override def generate(look: LookGeneratorDTO, queryFilters: Map[String, Seq[String]]): LookGeneratorDTO = {
 
-    if (look.top.get.isDress) {
-      look.length = look.top.get.length
+    if (look.hasDress) {
       look
     } else {
 

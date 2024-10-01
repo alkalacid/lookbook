@@ -13,6 +13,7 @@ case class LookGeneratorDTO(
                  var jewelry: List[Jewelry] = List.empty,
                  var hasWeirdElement: Boolean = false,
                  var hasColor: Boolean = false,
+                 var hasDress: Boolean = false,
                  var length: String = "mid"
           )
 

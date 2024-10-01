@@ -14,6 +14,7 @@ class CoatingClothingBuilderImpl @Inject()(val topRepository: TopRepositoryImpl)
   private val topNoCoating = "noCoating"
 
   private def coatingFilter(): Top => LogicalBoolean = _. isCoating <> topNoCoating
+  private def noDressFilter(): Top => LogicalBoolean = _.isDress === false
 
   override def generate(look: LookGeneratorDTO, queryFilters: Map[String, Seq[String]]): LookGeneratorDTO = {
     if (look.top.get.isSleeve || queryFilters("weather").head == weatherHeat) {
@@ -28,11 +29,21 @@ class CoatingClothingBuilderImpl @Inject()(val topRepository: TopRepositoryImpl)
         look.coating = coating
       }
 
+      if(coating.get.isDress) {
+        look.hasDress = true
+        look.length = coating.get.length
+      }
+
       checkOut(look, look.coating)
     }
   }
 
   override def getFilters(look: LookGeneratorDTO, queryFilters: Map[String, Seq[String]]): List[Top => LogicalBoolean] = {
-    List(coatingFilter() :: checkIn(look), getFiltersByEvent(queryFilters("event").head)).flatten
+    if (look.hasDress) {
+      List(noDressFilter() :: coatingFilter() :: checkIn(look), getFiltersByEvent(queryFilters("event").head)).flatten
+    } else {
+      List(coatingFilter() :: checkIn(look), getFiltersByEvent(queryFilters("event").head)).flatten
+    }
+
   }
 }
