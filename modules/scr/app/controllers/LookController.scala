@@ -3,8 +3,10 @@ package controllers
 import com.google.inject.Inject
 import models.dao.entities.Look
 import models.dao.repositories.LookRepositoryImpl
-import models.dto.LookDTO
+import models.dto.{LookDTO, LookFilterDTO}
 import models.services.LookBookServiceImpl
+import play.api.data.Form
+import play.api.data.Forms.{mapping, optional, text}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, Controller}
 
@@ -13,13 +15,20 @@ class LookController @Inject()(
                                 val lookRepository: LookRepositoryImpl
                               ) extends Controller {
 
-  def generateLook(
-                  weather: String = "any",
-                  event: String = "any",
-                  tailDay: String = "low"
-                  ): Action[AnyContent] = Action{ implicit request =>
+  private val generateLookForm = Form(
+    mapping(
+      "weather" -> text,
+      "event" -> text,
+      "tailDay" -> text,
+      "predefinedItemId" -> optional(text),
+      "predefinedItemType" -> optional(text)
+    )(LookFilterDTO.apply)(LookFilterDTO.unapply)
+  )
+
+  def generateLook: Action[AnyContent] = Action{ implicit request =>
     try {
-      Ok(Json.toJson(lookBookService.generateLook(weather, event, tailDay)))
+      val filters: LookFilterDTO = generateLookForm.bindFromRequest.get
+      Ok(Json.toJson(lookBookService.generateLook(filters)))
     } catch {
       case e: Exception => NotFound(e.getMessage)
     }

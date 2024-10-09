@@ -14,6 +14,7 @@ case class LookGeneratorDTO(
                  var hasWeirdElement: Boolean = false,
                  var hasColor: Boolean = false,
                  var hasDress: Boolean = false,
+                 var hasSleeves: Boolean = false,
                  var length: String = "mid",
                  var weather: String,
                  var event: String,

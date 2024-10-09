@@ -8,14 +8,13 @@ import scala.util.Random
 
 trait MakeupBuilder extends DecoratorBuilder[Makeup, MakeupRepositoryImpl]
 
-class MakeupBuilderImpl @Inject()(val makeupRepository: MakeupRepositoryImpl) extends MakeupBuilder {
+class MakeupBuilderImpl @Inject()(val repository: MakeupRepositoryImpl) extends MakeupBuilder {
 
   val builderName: String = "makeup"
 
-  override def generate(look: LookGeneratorDTO): LookGeneratorDTO = {
-      if (Random.nextInt(3) == 2 || look.event == eventCelebrate) {
-          val filters = getFilters(look)
-          val makeup: Option[Makeup] = getElementFromDatabase(filters, makeupRepository)
+  override def generate(look: LookGeneratorDTO, itemId: String): LookGeneratorDTO = {
+      if (Random.nextInt(3) == 2 || look.event == eventCelebrate || itemId.nonEmpty) {
+          val makeup: Option[Makeup] = getItem(look, itemId, repository)
 
           if (makeup.isEmpty) {
               throw new Exception("No makeup was found")

@@ -9,26 +9,31 @@ import org.squeryl.PrimitiveTypeMode._
 
 trait TopClothingBuilder extends ClothingBuilder[Top, TopRepositoryImpl]
 
-class TopClothingBuilderImpl @Inject()(val topRepository: TopRepositoryImpl) extends TopClothingBuilder {
+class TopClothingBuilderImpl @Inject()(val repository: TopRepositoryImpl) extends TopClothingBuilder {
 
-  val builderName: String = "top"
+  override val builderName: String = "top"
 
   private val topOnlyCoating = "onlyCoating"
 
   private def noSleevesFilter(): Top => LogicalBoolean = _.isSleeve === false
   private def noCoatingFilter(): Top => LogicalBoolean = _.isCoating <> topOnlyCoating
+  private def noDressFilter(): Top => LogicalBoolean = _.isDress === false
 
-  override def generate(look: LookGeneratorDTO): LookGeneratorDTO = {
-    val filters = getFilters(look)
-    val top: Option[Top] = getElementFromDatabase(filters, topRepository)
+  override def generate(look: LookGeneratorDTO, itemId: String): LookGeneratorDTO = {
+    val top: Option[Top] = getItem(look, itemId, repository)
 
     if(top.isEmpty) {
       throw new Exception("No top was found")
     } else {
       look.top = top
-      look.length = top.get.length
+      if(look.length.isEmpty) {
+        look.length = top.get.length
+      }
       if(top.get.isDress) {
         look.hasDress = true
+      }
+      if(top.get.isSleeve) {
+        look.hasSleeves = true
       }
       checkOut(look, look.top)
     }
@@ -38,12 +43,12 @@ class TopClothingBuilderImpl @Inject()(val topRepository: TopRepositoryImpl) ext
 
     val filters = if (look.weather == weatherHeat) {
       List(noCoatingFilter(), noSleevesFilter())
-    } else {
-      List(noCoatingFilter())
-    }
+    } else if (look.bottom.isDefined) {
+      List(noCoatingFilter(), noDressFilter())
+    } else List(noCoatingFilter())
 
     val filterByEvent = look.event
-    List(getFiltersByEvent(filterByEvent), getFilterByRelaxEvent(filterByEvent), filters).flatten
+    List(getFiltersByEvent(filterByEvent), getFilterByRelaxEvent(filterByEvent), filters, checkIn(look)).flatten
 
   }
 }

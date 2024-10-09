@@ -12,7 +12,7 @@ import scala.util.Random
 
 trait JewelryBuilder extends DecoratorBuilder[Jewelry, JewelryRepositoryImpl]
 
-class JewelryBuilderImpl @Inject()(val jewelryRepository: JewelryRepositoryImpl) extends JewelryBuilder {
+class JewelryBuilderImpl @Inject()(val repository: JewelryRepositoryImpl) extends JewelryBuilder {
 
   val builderName: String = "jewelry"
 
@@ -21,15 +21,15 @@ class JewelryBuilderImpl @Inject()(val jewelryRepository: JewelryRepositoryImpl)
 
   private def noHandsJewelryFilter(): Jewelry => LogicalBoolean = _.area <> areaHands
 
-  override def generate(look: LookGeneratorDTO): LookGeneratorDTO = {
-      if (Random.nextInt(2) == 1 || look.event == eventCelebrate) {
+  override def generate(look: LookGeneratorDTO, itemId: String): LookGeneratorDTO = {
+      if (Random.nextInt(2) == 1 || look.event == eventCelebrate || itemId.nonEmpty) {
           val filters = getFilters(look)
-          val queryList: List[Jewelry] = getJewelryFromDatabase(filters)
+          val queryList: List[Jewelry] = getJewelryFromDatabase(filters, itemId)
 
           if (queryList.isEmpty) {
             look
           } else if (look.event == eventRelax) {
-            look.jewelry = List(queryList(1))
+            look.jewelry = List(queryList.head)
             look
           } else {
 
@@ -43,27 +43,39 @@ class JewelryBuilderImpl @Inject()(val jewelryRepository: JewelryRepositoryImpl)
           }
       } else {
           look
-        }
+      }
   }
 
   override protected def getFilters(look: LookGeneratorDTO): List[Jewelry => LogicalBoolean] = {
-    if (look.top.get.isSleeve) {
+    if (look.hasSleeves) {
       List(List(noHandsJewelryFilter()), checkIn(look)).flatten
     } else {
       checkIn(look)
     }
   }
 
-  private def getJewelryFromDatabase(filters: List[Jewelry => LogicalBoolean]): List[Jewelry] = {
-    if (filters.nonEmpty) {
-      Random.shuffle(jewelryRepository.filter(filters = filters))
+  private def getJewelryFromDatabase(filters: List[Jewelry => LogicalBoolean], itemId: String): List[Jewelry] = {
+    val queryList: List[Jewelry] = if (filters.nonEmpty) {
+      Random.shuffle(repository.filter(filters = filters))
     } else {
-      Random.shuffle(jewelryRepository.list())
+      Random.shuffle(repository.list())
+    }
+
+    if (itemId.nonEmpty) {
+      getPredefinedJewelryFromDatabase(queryList, itemId)
+    } else {
+      queryList
     }
   }
 
+  private def getPredefinedJewelryFromDatabase(queryList: List[Jewelry], itemId: String): List[Jewelry] = {
+    val firstItem = repository.find(itemId).getOrElse(throw new Exception("No predefined jewelry was found"))
+    val otherItems: List[Jewelry] = queryList.filter(_.id != itemId)
+    firstItem :: otherItems
+  }
+
   @tailrec
-  private def filterJewelry(jewelryList: List[Jewelry], resultList: List[Jewelry], limit: Int, acc: Int = 1): List[Jewelry] = {
+  private def filterJewelry(jewelryList: List[Jewelry], resultList: List[Jewelry], limit: Int, acc: Int = 0): List[Jewelry] = {
     if (resultList.length == limit) {
       resultList
     } else {

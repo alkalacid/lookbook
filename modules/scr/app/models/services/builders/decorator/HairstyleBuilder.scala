@@ -11,7 +11,7 @@ import scala.util.Random
 
 trait HairstyleBuilder extends DecoratorBuilder[Hairstyle, HairstyleRepositoryImpl]
 
-class HairstyleBuilderImpl @Inject()(val hairstyleRepository: HairstyleRepositoryImpl) extends HairstyleBuilder {
+class HairstyleBuilderImpl @Inject()(val repository: HairstyleRepositoryImpl) extends HairstyleBuilder {
 
     val builderName: String = "hairstyle"
 
@@ -23,10 +23,9 @@ class HairstyleBuilderImpl @Inject()(val hairstyleRepository: HairstyleRepositor
     private def noHighStylingFilter(): Hairstyle => LogicalBoolean = _.stylingDegree lt 8
     private def someStylingFilter(): Hairstyle => LogicalBoolean = _.stylingDegree gt 0
 
-    override def generate(look: LookGeneratorDTO): LookGeneratorDTO = {
-        if (Random.nextInt(3) == 2 || look.tailDay != tailDayLow) {
-            val filters = getFilters(look)
-            val hairstyle: Option[Hairstyle] = getElementFromDatabase(filters, hairstyleRepository)
+    override def generate(look: LookGeneratorDTO, itemId: String): LookGeneratorDTO = {
+        if (Random.nextInt(3) == 2 || look.tailDay != tailDayLow || itemId.nonEmpty) {
+            val hairstyle: Option[Hairstyle] = getItem(look, itemId, repository)
 
             if (hairstyle.isEmpty) {
                 throw new Exception("No hairstyle was found")

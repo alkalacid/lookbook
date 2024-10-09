@@ -11,7 +11,7 @@ import scala.util.Random
 
 trait CoatingClothingBuilder extends ClothingBuilder[Top, TopRepositoryImpl]
 
-class CoatingClothingBuilderImpl @Inject()(val topRepository: TopRepositoryImpl) extends CoatingClothingBuilder {
+class CoatingClothingBuilderImpl @Inject()(val repository: TopRepositoryImpl) extends CoatingClothingBuilder {
 
   val builderName: String = "coating"
 
@@ -20,15 +20,15 @@ class CoatingClothingBuilderImpl @Inject()(val topRepository: TopRepositoryImpl)
   private def coatingFilter(): Top => LogicalBoolean = _. isCoating <> topNoCoating
   private def noDressFilter(): Top => LogicalBoolean = _.isDress === false
   private def dressFilter(): Top => LogicalBoolean = _.isDress === true
+  private def noHipLengthFilter(): Top => LogicalBoolean = _.length <> lengthHip
 
-  override def generate(look: LookGeneratorDTO): LookGeneratorDTO = {
-    if (look.weather == weatherHeat) {
+  override def generate(look: LookGeneratorDTO, itemId: String): LookGeneratorDTO = {
+    if (look.weather == weatherHeat && itemId.isEmpty) {
       look
-    } else if (look.top.get.isSleeve && Random.nextInt(4) != 1) {
+    } else if (look.hasSleeves && Random.nextInt(4) != 1 && itemId.isEmpty) {
       look
     } else {
-      val filters = getFilters(look)
-      val coating: Option[Top] = getElementFromDatabase(filters, topRepository)
+      val coating: Option[Top] = getItem(look, itemId, repository)
 
       if(coating.isEmpty) {
         throw new Exception("No coating was found")
@@ -38,7 +38,9 @@ class CoatingClothingBuilderImpl @Inject()(val topRepository: TopRepositoryImpl)
 
       if(coating.get.isDress) {
         look.hasDress = true
-        look.length = coating.get.length
+        if(look.length.isEmpty) {
+          look.length = coating.get.length
+        }
       }
 
       checkOut(look, look.coating)
@@ -46,10 +48,12 @@ class CoatingClothingBuilderImpl @Inject()(val topRepository: TopRepositoryImpl)
   }
 
   override def getFilters(look: LookGeneratorDTO): List[Top => LogicalBoolean] = {
-    if (look.hasDress) {
+    if (look.hasDress || look.bottom.isDefined) {
       List(noDressFilter() :: coatingFilter() :: checkIn(look), getFiltersByEvent(look.event)).flatten
-    } else if (look.top.get.isSleeve) {
+    } else if (look.hasSleeves) {
       List(dressFilter() :: coatingFilter() :: checkIn(look), getFiltersByEvent(look.event)).flatten
+    } else if (look.length.nonEmpty && look.length == lengthMidi) {
+      List(noHipLengthFilter() :: coatingFilter() :: checkIn(look), getFiltersByEvent(look.event)).flatten
     } else {
       List(coatingFilter() :: checkIn(look), getFiltersByEvent(look.event)).flatten
     }

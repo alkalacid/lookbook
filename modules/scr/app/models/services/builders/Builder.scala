@@ -11,7 +11,16 @@ trait Builder[Entity <: LookBookItem, Repository <: CrudRepository[String, Entit
 
   protected def getFilters(look: LookGeneratorDTO): List[Entity => LogicalBoolean]
 
-  protected def getElementFromDatabase(filters: List[Entity => LogicalBoolean], repository: Repository): Option[Entity] = {
+  protected def getItem(look: LookGeneratorDTO, itemId: String, repository: Repository): Option[Entity] = {
+    val filters = getFilters(look)
+    if (itemId.isEmpty) {
+      getElementFromDatabase(filters, repository)
+    } else {
+      repository.find(itemId)
+    }
+  }
+
+  private def getElementFromDatabase(filters: List[Entity => LogicalBoolean], repository: Repository): Option[Entity] = {
     if (filters.nonEmpty) {
       Random.shuffle(repository.filter(filters = filters)).headOption
     } else {

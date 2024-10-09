@@ -9,7 +9,7 @@ import org.squeryl.dsl.ast.LogicalBoolean
 
 trait ShoesClothingBuilder extends ClothingBuilder[Shoes, ShoesRepositoryImpl]
 
-class ShoesClothingBuilderImpl @Inject()(val shoesRepository: ShoesRepositoryImpl) extends ShoesClothingBuilder {
+class ShoesClothingBuilderImpl @Inject()(val repository: ShoesRepositoryImpl) extends ShoesClothingBuilder {
 
   val builderName: String = "shoes"
 
@@ -20,14 +20,12 @@ class ShoesClothingBuilderImpl @Inject()(val shoesRepository: ShoesRepositoryImp
   private def heelsFilter(): Shoes => LogicalBoolean = _.isHeel === true
   private def noHighShoesFilter(): Shoes => LogicalBoolean = _.isHigh === false
 
-  override def generate(look: LookGeneratorDTO): LookGeneratorDTO = {
+  override def generate(look: LookGeneratorDTO, itemId: String): LookGeneratorDTO = {
 
     if (look.weather == weatherWinter || look.weather == weatherRoom) {
       look
     } else {
-
-      val filters = getFilters(look)
-      val shoes: Option[Shoes] = getElementFromDatabase(filters, shoesRepository)
+      val shoes: Option[Shoes] = getItem(look, itemId, repository)
 
       if(shoes.isEmpty) {
         throw new Exception("No shoes was found")

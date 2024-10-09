@@ -19,5 +19,5 @@ trait AbstractBuilder {
   protected val colorBase = "base"
   protected val styleSport = "sport"
 
-  def generate(look: LookGeneratorDTO): LookGeneratorDTO
+  def generate(look: LookGeneratorDTO, itemId: String = ""): LookGeneratorDTO
 }

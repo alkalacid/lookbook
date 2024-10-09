@@ -3,14 +3,14 @@ package models.services
 import com.google.inject.Inject
 import models.dao.entities.{JewelryToLook, Look}
 import models.dao.repositories._
-import models.dto.{LookDTO, LookGeneratorDTO, LookWithItemsDTO}
+import models.dto.{LookDTO, LookFilterDTO, LookGeneratorDTO, LookWithItemsDTO}
 import models.services.builders.decorator._
 import models.services.builders._
 
+import scala.annotation.tailrec
+
 trait LookBookService {
-  def generateLook(weather: String = "any",
-                   event: String = "any",
-                   tailDay: String = "low"): LookGeneratorDTO
+  def generateLook(filters: LookFilterDTO): LookGeneratorDTO
 
   def add(look: LookDTO): Look
 
@@ -38,20 +38,18 @@ class LookBookServiceImpl @Inject()(
     jewelryBuilder
   )
 
-  def generateLook(weather: String = "any",
-                   event: String = "any",
-                   tailDay: String = "low"): LookGeneratorDTO = {
+  def generateLook(filters: LookFilterDTO): LookGeneratorDTO = {
+    val lookDTO: LookGeneratorDTO = new LookGeneratorDTO(weather = filters.weather, event = filters.event, tailDay = filters.tailDay)
+    if (filters.predefinedItemId.isDefined) {
+      val itemType: String = filters.predefinedItemType.getOrElse(throw new Exception("No itemType for itemId"))
+      val firstBuilder: AbstractBuilder = builders.filter(_.builderName == itemType).head
+      val otherBuilders: List[AbstractBuilder] = builders.filter(_.builderName != itemType)
+      val look: LookGeneratorDTO = firstBuilder.generate(lookDTO, filters.predefinedItemId.get)
+      recursiveGenerateLook(otherBuilders, look)
+    } else {
+      recursiveGenerateLook(builders, lookDTO)
 
-    @tailrec
-    def recursiveGenerateLook(builders: List[AbstractBuilder], look: LookGeneratorDTO): LookGeneratorDTO= builders match {
-          case head :: tail =>
-            val newLook = head.generate(look)
-            recursiveGenerateLook(tail, newLook)
-
-          case Nil => look
     }
-
-    recursiveGenerateLook(builders, new LookGeneratorDTO(weather = weather, event = event, tailDay = tailDay))
   }
 
   override def add(look: LookDTO): Look = {
@@ -83,15 +81,24 @@ class LookBookServiceImpl @Inject()(
   override def get: Seq[LookWithItemsDTO] = {
     lookRepository.list().map { look =>
       new LookWithItemsDTO(
-        top = topBuilder.topRepository.find(look.top.getOrElse("")),
-        bottom = bottomBuilder.bottomRepository.find(look.bottom.getOrElse("")),
-        shoes = shoesBuilder.shoesRepository.find(look.shoes.getOrElse("")),
-        coating = topBuilder.topRepository.find(look.coating.getOrElse("")),
-        hairstyle = hairstyleBuilder.hairstyleRepository.find(look.hairstyle.getOrElse("")),
-        makeup = makeupBuilder.makeupRepository.find(look.makeup.getOrElse("")),
+        top = topBuilder.repository.find(look.top.getOrElse("")),
+        bottom = bottomBuilder.repository.find(look.bottom.getOrElse("")),
+        shoes = shoesBuilder.repository.find(look.shoes.getOrElse("")),
+        coating = topBuilder.repository.find(look.coating.getOrElse("")),
+        hairstyle = hairstyleBuilder.repository.find(look.hairstyle.getOrElse("")),
+        makeup = makeupBuilder.repository.find(look.makeup.getOrElse("")),
         comment = look.comment,
         jewelry = jewelryToLookRepository.getJewelryByLook(look.id)
       )
     }
+  }
+
+  @tailrec
+  private def recursiveGenerateLook(builders: List[AbstractBuilder], look: LookGeneratorDTO): LookGeneratorDTO= builders match {
+      case head :: tail =>
+        val newLook = head.generate(look)
+        recursiveGenerateLook(tail, newLook)
+
+      case Nil => look
   }
 }
