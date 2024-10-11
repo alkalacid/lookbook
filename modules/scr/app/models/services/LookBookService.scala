@@ -6,14 +6,15 @@ import models.dao.repositories._
 import models.dto.{LookDTO, LookFilterDTO, LookGeneratorDTO, LookWithItemsDTO}
 import models.services.builders.decorator._
 import models.services.builders._
+import org.squeryl.PrimitiveTypeMode.transaction
 
 import scala.annotation.tailrec
 
 trait LookBookService {
   def generateLook(filters: LookFilterDTO): LookGeneratorDTO
-
-  def add(look: LookDTO): Look
-
+  def add(look: LookDTO): LookWithItemsDTO
+  def update(look: LookDTO): LookWithItemsDTO
+  def delete(look: LookDTO): Unit
   def get: Seq[LookWithItemsDTO]
 }
 
@@ -52,45 +53,31 @@ class LookBookServiceImpl @Inject()(
     }
   }
 
-  override def add(look: LookDTO): Look = {
+  override def add(look: LookDTO): LookWithItemsDTO = transaction {
 
-    val newLook = lookRepository.insert(new Look(
-      top = look.top,
-      bottom = look.bottom,
-      shoes = look.shoes,
-      coating = look.coating,
-      hairstyle = look.hairstyle,
-      makeup = look.makeup,
-      weather = look.weather,
-      event = look.event,
-      comment = look.comment
-    ))
+    val newLook = lookRepository.insert(toLook(look))
+    linkJewelryToLook(newLook.id, look.jewelry)
 
-    if (look.jewelry.isDefined) {
-      look.jewelry.get.foreach( j =>
-        jewelryToLookRepository.insert(new JewelryToLook(
-          jewelry = j.id,
-          look = newLook.id
-        ))
-      )
-    }
+    toLookWithItemsDTO(newLook)
+  }
 
-    newLook
+  override def update(look: LookDTO): LookWithItemsDTO = transaction {
+
+    lookRepository.update(look.look)
+    jewelryToLookRepository.deleteJewelryToLookByLook(look.look.id)
+    linkJewelryToLook(look.look.id, look.jewelry)
+
+    toLookWithItemsDTO(look.look)
+  }
+
+  override def delete(look: LookDTO): Unit = {
+
+    jewelryToLookRepository.deleteJewelryToLookByLook(look.look.id)
+    lookRepository.delete(look.look)
   }
 
   override def get: Seq[LookWithItemsDTO] = {
-    lookRepository.list().map { look =>
-      new LookWithItemsDTO(
-        top = topBuilder.repository.find(look.top.getOrElse("")),
-        bottom = bottomBuilder.repository.find(look.bottom.getOrElse("")),
-        shoes = shoesBuilder.repository.find(look.shoes.getOrElse("")),
-        coating = topBuilder.repository.find(look.coating.getOrElse("")),
-        hairstyle = hairstyleBuilder.repository.find(look.hairstyle.getOrElse("")),
-        makeup = makeupBuilder.repository.find(look.makeup.getOrElse("")),
-        comment = look.comment,
-        jewelry = jewelryToLookRepository.getJewelryByLook(look.id)
-      )
-    }
+    lookRepository.list().map(toLookWithItemsDTO)
   }
 
   @tailrec
@@ -100,5 +87,43 @@ class LookBookServiceImpl @Inject()(
         recursiveGenerateLook(tail, newLook)
 
       case Nil => look
+  }
+
+  private def linkJewelryToLook(lookId: String, jewelrySet: Option[Set[String]]): Unit = {
+    jewelrySet.map( jewelry =>
+      jewelry.map (j =>
+        jewelryToLookRepository.insert(new JewelryToLook(
+          jewelry = j,
+          look = lookId
+        ))
+      )
+    )
+  }
+
+  private def toLookWithItemsDTO(look: Look): LookWithItemsDTO = {
+    new LookWithItemsDTO(
+      top = topBuilder.repository.find(look.top.getOrElse("")),
+      bottom = bottomBuilder.repository.find(look.bottom.getOrElse("")),
+      shoes = shoesBuilder.repository.find(look.shoes.getOrElse("")),
+      coating = topBuilder.repository.find(look.coating.getOrElse("")),
+      hairstyle = hairstyleBuilder.repository.find(look.hairstyle.getOrElse("")),
+      makeup = makeupBuilder.repository.find(look.makeup.getOrElse("")),
+      comment = look.comment,
+      jewelry = jewelryToLookRepository.getJewelryByLook(look.id)
+    )
+  }
+
+  private def toLook(look: LookDTO): Look = {
+    new Look(
+      top = look.look.top,
+      bottom = look.look.bottom,
+      shoes = look.look.shoes,
+      coating = look.look.coating,
+      hairstyle = look.look.hairstyle,
+      makeup = look.look.makeup,
+      weather = look.look.weather,
+      event = look.look.event,
+      comment = look.look.comment
+    )
   }
 }

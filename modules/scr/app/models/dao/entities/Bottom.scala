@@ -2,8 +2,10 @@ package models.dao.entities
 
 import play.api.libs.json.{Json, Reads, Writes}
 
+import java.util.UUID
+
 case class Bottom(
-                   override val id: String,
+                   override val id: String = UUID.randomUUID.toString.replaceAll("-", ""),
                    override val name: String,
                    override val image: String = "",
                    length: String = "mini",

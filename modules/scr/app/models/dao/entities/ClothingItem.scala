@@ -1,7 +1,9 @@
 package models.dao.entities
 
+import java.util.UUID
+
 class ClothingItem extends LookBookItem {
-  override def id: String = ""
+  override def id: String = UUID.randomUUID.toString.replaceAll("-", "")
   override def name: String = ""
   override def image: String = ""
   override def isWeird: Boolean = false

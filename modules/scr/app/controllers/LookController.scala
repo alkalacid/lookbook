@@ -1,7 +1,6 @@
 package controllers
 
 import com.google.inject.Inject
-import models.dao.entities.Look
 import models.dao.repositories.LookRepositoryImpl
 import models.dto.{LookDTO, LookFilterDTO}
 import models.services.LookBookServiceImpl
@@ -34,7 +33,7 @@ class LookController @Inject()(
     }
   }
 
-  def add: Action[AnyContent] = Action{ implicit rc =>
+  def add: Action[AnyContent] = Action { implicit rc =>
     try {
       val res = rc.body.asJson.map(_.as[LookDTO]).map(lookBookService.add).get
       Ok(Json.toJson(res))
@@ -43,14 +42,22 @@ class LookController @Inject()(
     }
   }
 
-  def update: Action[Look] = Action(parse.json[Look]){ rc =>
-    lookRepository.update(rc.body)
-    Ok(Json.toJson(rc.body))
+  def update: Action[AnyContent] = Action { implicit rc =>
+    try {
+      val res = rc.body.asJson.map(_.as[LookDTO]).map(lookBookService.update).get
+      Ok(Json.toJson(res))
+    } catch {
+      case e: Exception => Ok(e.getMessage)
+    }
   }
 
-  def delete: Action[Look] = Action(parse.json[Look]){ rc =>
-    lookRepository.delete(rc.body)
-    Ok(Json.toJson(rc.body))
+  def delete: Action[AnyContent] = Action { implicit rc =>
+    try {
+      rc.body.asJson.map(_.as[LookDTO]).map(lookBookService.delete).get
+      Ok
+    } catch {
+      case e: Exception => Ok(e.getMessage)
+    }
   }
 
   def list: Action[AnyContent] = Action{

@@ -22,4 +22,8 @@ class JewelryToLookRepositoryImpl extends JewelryToLookRepository {
     val jewelryIds: List[String] = filter(List(lookIdFilter(lookId))).map(jewelryToLook => jewelryToLook.jewelry)
     from(jewelryTable)(j => where(j.id in jewelryIds) select j).toSet
   }
+
+  def deleteJewelryToLookByLook(lookId: String): Int = transaction {
+    defaultTable.deleteWhere(j => j.look === lookId)
+  }
 }
