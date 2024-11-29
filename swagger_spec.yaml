@@ -1,0 +1,905 @@
+openapi: 3.0.3
+info:
+  title: LookBook
+  description: |-
+    Сервис управления гардеробом. Можно добавлять, изменять, удалять, смотреть элементы гардероба. Основная функция - конструирование связного образа, используя фильтры по погоде и по типу мероприятия, а также внутреннюю логику.
+  contact:
+    email: dashaberezina96@yandex.ru
+  version: 1.0.0
+tags:
+  - name: look
+    description: Operations about look
+  - name: top
+    description: Operations about upper part of clothing
+  - name: bottom
+    description: Operations about lower part of clothing
+  - name: shoes
+    description: Operations about shoes
+  - name: hairstyle
+    description: Operations about hairstyle variations
+  - name: makeup
+    description: Operations about makeup variations
+  - name: jewelry
+    description: Operations about jewelry
+paths:
+  /generatelook:
+    post:
+      tags:
+        - look
+      summary: Generate new look
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                weather:
+                  type: string
+                  enum:
+                    - any
+                    - winter
+                    - cold
+                    - warm
+                    - heat
+                    - room
+                event:
+                  type: string
+                  enum:
+                    - any
+                    - celebrate
+                    - relax
+                tailDay:
+                  type: string
+                  enum:
+                    - low
+                    - medium
+                    - hign
+                predefinedItemId:
+                  type: string
+                  description: Requred item for look to be generated
+                  example: "98aaecf85b21498c9069fecc0c195a58"
+                  nullable: true
+                predefinedItemType:
+                  type: string
+                  description: Type of requred item for look to be generated
+                  example: "98aaecf85b21498c9069fecc0c195a58"
+                  nullable: true
+      responses:
+        '200':
+          description: Return saved look
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  top:
+                    $ref: '#/components/schemas/Top'
+                  bottom:
+                    $ref: '#/components/schemas/Bottom'
+                  shoes:
+                    $ref: '#/components/schemas/Shoes'
+                  coating:
+                    $ref: '#/components/schemas/Top'
+                  hairstyle:
+                    $ref: '#/components/schemas/Hairstyle'
+                  makeup:
+                    $ref: '#/components/schemas/Makeup'
+                  jewelry:
+                    type: array
+                    items: 
+                      $ref: '#/components/schemas/Jewelry'
+                
+                
+        '404':
+          description: Some required item was not found
+  /look:
+    get:
+      tags:
+        - look
+      summary: Looks list
+      description: Return list of saved looks
+      responses:
+        '200':
+          description: List may be empty 
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FullLook'
+    post:
+      tags:
+        - look
+      summary: Save new look
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddLook'
+        required: true
+      responses:
+        '200':
+          description: Return saved look
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/FullLook'
+        '404':
+          description: Some item was not found
+    put:
+      tags:
+        - look
+      summary: Update an existing look
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddLook'
+        required: true
+      responses:
+        '200':
+          description: Return updated look
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/FullLook'
+        '404':
+          description: Some item was not found
+    delete:
+      tags:
+        - look
+      summary: Delete look
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddLook'
+        required: true
+      responses:
+        '200':
+          description: Return deleted look
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/AddLook'
+        '404':
+          description: Look was not found
+  /top:
+    get:
+      tags:
+        - top
+      summary: Dresses and tops list
+      responses:
+        '200':
+          description: List may be empty 
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Top'
+    post:
+      tags:
+        - top
+      summary: Save new top
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Top'
+        required: true
+      responses:
+        '200':
+          description: Return saved top
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Top'
+    put:
+      tags:
+        - top
+      summary: Update an existing top
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Top'
+        required: true
+      responses:
+        '200':
+          description: Return updated top
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Top'
+        '404':
+          description: Top was not found
+    delete:
+      tags:
+        - top
+      summary: Delete top
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Top'
+        required: true
+      responses:
+        '200':
+          description: Return deleted top
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Top'
+        '404':
+          description: Top was not found
+  /bottom:
+    get:
+      tags:
+        - bottom
+      summary: Pants and skirts list
+      responses:
+        '200':
+          description: List may be empty 
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Bottom'
+    post:
+      tags:
+        - bottom
+      summary: Save new bottom
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Bottom'
+        required: true
+      responses:
+        '200':
+          description: Return saved bottom
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Bottom'
+    put:
+      tags:
+        - bottom
+      summary: Update an existing bottom
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Bottom'
+        required: true
+      responses:
+        '200':
+          description: Return updated bottom
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Bottom'
+        '404':
+          description: Bottom was not found
+    delete:
+      tags:
+        - bottom
+      summary: Delete bottom
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Bottom'
+        required: true
+      responses:
+        '200':
+          description: Return deleted bottom
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Bottom'
+        '404':
+          description: Bottom was not found
+  /shoes:
+    get:
+      tags:
+        - shoes
+      summary: Shoes list
+      responses:
+        '200':
+          description: List may be empty 
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Shoes'
+    post:
+      tags:
+        - shoes
+      summary: Save new shoes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Shoes'
+        required: true
+      responses:
+        '200':
+          description: Return saved shoes
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Shoes'
+    put:
+      tags:
+        - shoes
+      summary: Update an existing shoes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Shoes'
+        required: true
+      responses:
+        '200':
+          description: Return updated shoes
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Shoes'
+        '404':
+          description: Shoes was not found
+    delete:
+      tags:
+        - shoes
+      summary: Delete shoes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Shoes'
+        required: true
+      responses:
+        '200':
+          description: Return deleted shoes
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Shoes'
+        '404':
+          description: Shoes was not found
+  /hairstyle:
+    get:
+      tags:
+        - hairstyle
+      summary: Hairstyles list
+      responses:
+        '200':
+          description: List may be empty 
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Hairstyle'
+    post:
+      tags:
+        - hairstyle
+      summary: Save new hairstyle
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Hairstyle'
+        required: true
+      responses:
+        '200':
+          description: Return saved hairstyle
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Hairstyle'
+    put:
+      tags:
+        - hairstyle
+      summary: Update an existing shoes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Hairstyle'
+        required: true
+      responses:
+        '200':
+          description: Return updated hairstyle
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Hairstyle'
+        '404':
+          description: Hairstyle was not found
+    delete:
+      tags:
+        - hairstyle
+      summary: Delete hairstyle
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Hairstyle'
+        required: true
+      responses:
+        '200':
+          description: Return deleted hairstyle
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Hairstyle'
+        '404':
+          description: Hairstyle was not found
+  /makeup:
+    get:
+      tags:
+        - makeup
+      summary: Makeup variations list
+      responses:
+        '200':
+          description: List may be empty 
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Makeup'
+    post:
+      tags:
+        - makeup
+      summary: Save new makeup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Makeup'
+        required: true
+      responses:
+        '200':
+          description: Return saved makeup
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Makeup'
+    put:
+      tags:
+        - makeup
+      summary: Update an existing makeup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Makeup'
+        required: true
+      responses:
+        '200':
+          description: Return updated makeup
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Makeup'
+        '404':
+          description: Makeup was not found
+    delete:
+      tags:
+        - makeup
+      summary: Delete makeup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Makeup'
+        required: true
+      responses:
+        '200':
+          description: Return deleted makeup
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Makeup'
+        '404':
+          description: Makeup was not found
+  /jewelry:
+    get:
+      tags:
+        - jewelry
+      summary: Jewelry list
+      responses:
+        '200':
+          description: List may be empty 
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Jewelry'
+    post:
+      tags:
+        - jewelry
+      summary: Save new jewelry
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Jewelry'
+        required: true
+      responses:
+        '200':
+          description: Return saved jewelry
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Jewelry'
+    put:
+      tags:
+        - jewelry
+      summary: Update an existing jewelry
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Jewelry'
+        required: true
+      responses:
+        '200':
+          description: Return updated jewelry
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Jewelry'
+        '404':
+          description: Jewelry was not found
+    delete:
+      tags:
+        - jewelry
+      summary: Delete jewelry
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Jewelry'
+        required: true
+      responses:
+        '200':
+          description: Return deleted jewelry
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Jewelry'
+        '404':
+          description: Jewelry was not found
+components:
+  schemas:
+    FullLook:
+      type: object
+      properties:
+        top:
+          $ref: '#/components/schemas/Top'
+        bottom:
+          $ref: '#/components/schemas/Bottom'
+        shoes:
+          $ref: '#/components/schemas/Shoes'
+        coating:
+          $ref: '#/components/schemas/Top'
+        hairstyle:
+          $ref: '#/components/schemas/Hairstyle'
+        makeup:
+          $ref: '#/components/schemas/Makeup'
+        jewelry:
+          type: array
+          items:
+            $ref: '#/components/schemas/Jewelry'
+        comment:
+          type: string
+    AddLook:
+      type: object
+      properties:
+        look:
+          type: object
+          properties:
+            id:
+              type: string
+              description: Look id for post and put. Any string for add.
+              example: '98aaecf85b21498c9069fecc0c195a58'
+            top:
+              type: string
+              description: Dress/top id
+              example: '98aaecf85b21498c9069fecc0c195a58'
+            bottom:
+              type: string
+              description: Bottom id
+              example: '98aaecf85b21498c9069fecc0c195a58'
+            shoes:
+              type: string
+              description: Shoes id
+              example: '98aaecf85b21498c9069fecc0c195a58'
+            coating:
+              type: string
+              description: Dress/top as coating id
+              example: '98aaecf85b21498c9069fecc0c195a58'
+            hairstyle:
+              type: string
+              description: Hairstyle id
+              example: '98aaecf85b21498c9069fecc0c195a58'
+            makeup:
+              type: string
+              description: Makeup id
+              example: '98aaecf85b21498c9069fecc0c195a58'
+            weather:
+              type: string
+              description: This field accept any string. Enum value are needed for weather filter.
+              enum:
+                - winter
+                - cold
+                - warm
+                - heat
+                - room
+            event:
+              type: string
+              description: This field accept any string. Enum value are needed for event filter.
+              enum:
+                - celebrate
+                - relax
+            comment:
+              type: string
+        jewelry:
+          type: array
+          items:
+            type: string
+            description: Jewelry id
+            example: '98aaecf85b21498c9069fecc0c195a58'
+      required:
+        - id
+        - top
+    Top:
+      type: object
+      properties:
+        id:
+          type: string
+          example: '98aaecf85b21498c9069fecc0c195a58'
+        name:
+          type: string
+          example: 'Красная футболка'
+        image:
+          type: string
+          example: 'red-shirt.jpg'
+        isSleeve:
+          type: boolean
+          description: This flag means that dress/top has sleeves
+        isDress:
+          type: boolean
+        isCoating:
+          type: string
+          description: Ways to use this dress/top as coating
+          enum:
+            - noCoating
+            - canBeCoating
+            - onlyCoating
+        isWeird:
+          type: boolean
+          description: This flag means that look with this item will be weird
+        fashionability:
+          type: integer
+          description: range of 1-100
+        isOpen:
+          type: boolean
+          description: This flag means that dress/top is a bit revealing
+        color:
+          type: string
+          description: Dress/top color. Default value is 'base'
+          example: 'red'
+        style:
+          type: string
+          enum:
+            - base
+            - sport
+            - celebrating
+        lenght:
+          type: string
+          enum:
+            - standard
+            - crop
+            - mini
+            - waist
+            - hip
+            - mid
+      required:
+        - id
+        - name
+        - image
+        - isSleeve
+        - isDress
+        - isCoating
+        - isWeird
+        - fashionability
+        - isOpen
+        - color
+        - style
+        - lenght
+    Bottom:
+      type: object
+      properties:
+        id:
+          type: string
+          example: '98aaecf85b21498c9069fecc0c195a58'
+        name:
+          type: string
+          example: 'Красная юбка'
+        image:
+          type: string
+          example: 'red-skirt.jpg'
+        lenght:
+          type: string
+          enum:
+            - mini
+            - mid
+            - midi
+            - max
+        isWeird:
+          type: boolean
+        fashionability:
+          type: integer
+          description: range of 1-100
+        color:
+          type: string
+          example: 'red'
+        style:
+          type: string
+          enum:
+            - base
+            - sport
+            - celebrating
+      required:
+        - id
+        - name
+        - image
+        - lenght
+        - isWeird
+        - fashionability
+        - color
+        - style
+    Shoes:
+      type: object
+      properties:
+        id:
+          type: string
+          example: '98aaecf85b21498c9069fecc0c195a58'
+        name:
+          type: string
+          example: 'Красные туфли'
+        image:
+          type: string
+          example: 'red-shoes.jpg'
+        isHeel:
+          type: boolean
+          description: This flag means that shoes have a heel
+        isWarm:
+          type: boolean
+          description: This flag means that shoes are suitable for cold weather
+        isHigh:
+          type: boolean
+          description: This flag means that shoes are above the knee
+        isWeird:
+          type: boolean
+        fashionability:
+          type: integer
+          description: range of 1-100
+        isOpen:
+          type: boolean
+          description: This flag means that shoes are suitable for heat weather
+        color:
+          type: string
+          example: 'red'
+        style:
+          type: string
+          enum:
+            - base
+            - sport
+            - celebrating
+      required:
+        - id
+        - name
+        - image
+        - isHeel
+        - isWarm
+        - isHigh
+        - isWeird
+        - fashionability
+        - isOpen
+        - color
+        - style
+    Hairstyle:
+      type: object
+      properties:
+        id:
+          type: string
+          example: '98aaecf85b21498c9069fecc0c195a58'
+        name:
+          type: string
+          example: 'Хвост'
+        image:
+          type: string
+          example: 'tail.jpg'
+        stylingDegree:
+          type: integer
+          description: Range of 0 (loose hair) to 10 (hair bun)
+          example: 6
+        isWeird:
+          type: boolean
+      required:
+        - id
+        - name
+        - image
+        - stylingDegree
+        - isWeird
+    Makeup:
+      type: object
+      properties:
+        id:
+          type: string
+          example: '98aaecf85b21498c9069fecc0c195a58'
+        name:
+          type: string
+          example: 'Красная помада'
+        image:
+          type: string
+          example: 'red-lipstick.jpg'
+        style:
+          type: string
+          enum:
+            - base
+            - sport
+            - celebrating
+        area:
+          type: string
+          enum:
+            - lips
+            - eyes
+            - face
+        isWeird:
+          type: boolean
+      required:
+        - id
+        - name
+        - image
+        - style
+        - area
+        - isWeird
+    Jewelry:
+      type: object
+      properties:
+        id:
+          type: string
+          example: '98aaecf85b21498c9069fecc0c195a58'
+        name:
+          type: string
+          example: 'Часы'
+        image:
+          type: string
+          example: 'watch.jpg'
+        area:
+          type: string
+          enum:
+            - ears
+            - neck
+            - fingers
+            - hands
+            - cloth
+        isWeird:
+          type: boolean
+      required:
+        - id
+        - name
+        - image
+        - area
+        - isWeird

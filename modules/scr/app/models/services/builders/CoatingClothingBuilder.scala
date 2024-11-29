@@ -25,7 +25,7 @@ class CoatingClothingBuilderImpl @Inject()(val repository: TopRepositoryImpl) ex
   override def generate(look: LookGeneratorDTO, itemId: String): LookGeneratorDTO = {
     if (look.weather == weatherHeat && itemId.isEmpty) {
       look
-    } else if (look.hasSleeves && Random.nextInt(4) != 1 && itemId.isEmpty) {
+    } else if (look.hasSleeves && Random.nextInt(5) != 1 && itemId.isEmpty) {
       look
     } else {
       val coating: Option[Top] = getItem(look, itemId, repository)

@@ -1,5 +1,5 @@
-POST   /look                    @controllers.LookController.generateLook()
-POST   /addLook                 @controllers.LookController.add()
+POST   /generatelook            @controllers.LookController.generateLook()
+POST   /look                    @controllers.LookController.add()
 PUT    /look                    @controllers.LookController.update()
 DELETE /look                    @controllers.LookController.delete()
 GET    /look                    @controllers.LookController.list()
