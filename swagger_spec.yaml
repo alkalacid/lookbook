@@ -86,10 +86,10 @@ paths:
                     $ref: '#/components/schemas/Makeup'
                   jewelry:
                     type: array
-                    items: 
+                    items:
                       $ref: '#/components/schemas/Jewelry'
-                
-                
+
+
         '404':
           description: Some required item was not found
   /look:
@@ -100,7 +100,7 @@ paths:
       description: Return list of saved looks
       responses:
         '200':
-          description: List may be empty 
+          description: List may be empty
           content:
             application/json:
               schema:
@@ -123,7 +123,7 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/FullLook'
+                $ref: '#/components/schemas/FullLook'
         '404':
           description: Some item was not found
     put:
@@ -142,7 +142,7 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/FullLook'
+                $ref: '#/components/schemas/FullLook'
         '404':
           description: Some item was not found
     delete:
@@ -161,7 +161,7 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/AddLook'
+                $ref: '#/components/schemas/AddLook'
         '404':
           description: Look was not found
   /top:
@@ -171,7 +171,7 @@ paths:
       summary: Dresses and tops list
       responses:
         '200':
-          description: List may be empty 
+          description: List may be empty
           content:
             application/json:
               schema:
@@ -194,7 +194,7 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/Top'
+                $ref: '#/components/schemas/Top'
     put:
       tags:
         - top
@@ -211,7 +211,7 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/Top'
+                $ref: '#/components/schemas/Top'
         '404':
           description: Top was not found
     delete:
@@ -230,7 +230,7 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/Top'
+                $ref: '#/components/schemas/Top'
         '404':
           description: Top was not found
   /bottom:
@@ -240,7 +240,7 @@ paths:
       summary: Pants and skirts list
       responses:
         '200':
-          description: List may be empty 
+          description: List may be empty
           content:
             application/json:
               schema:
@@ -263,7 +263,7 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/Bottom'
+                $ref: '#/components/schemas/Bottom'
     put:
       tags:
         - bottom
@@ -280,7 +280,7 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/Bottom'
+                $ref: '#/components/schemas/Bottom'
         '404':
           description: Bottom was not found
     delete:
@@ -299,7 +299,7 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/Bottom'
+                $ref: '#/components/schemas/Bottom'
         '404':
           description: Bottom was not found
   /shoes:
@@ -309,7 +309,7 @@ paths:
       summary: Shoes list
       responses:
         '200':
-          description: List may be empty 
+          description: List may be empty
           content:
             application/json:
               schema:
@@ -332,7 +332,7 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/Shoes'
+                $ref: '#/components/schemas/Shoes'
     put:
       tags:
         - shoes
@@ -349,7 +349,7 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/Shoes'
+                $ref: '#/components/schemas/Shoes'
         '404':
           description: Shoes was not found
     delete:
@@ -368,7 +368,7 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/Shoes'
+                $ref: '#/components/schemas/Shoes'
         '404':
           description: Shoes was not found
   /hairstyle:
@@ -378,7 +378,7 @@ paths:
       summary: Hairstyles list
       responses:
         '200':
-          description: List may be empty 
+          description: List may be empty
           content:
             application/json:
               schema:
@@ -401,7 +401,7 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/Hairstyle'
+                $ref: '#/components/schemas/Hairstyle'
     put:
       tags:
         - hairstyle
@@ -418,7 +418,7 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/Hairstyle'
+                $ref: '#/components/schemas/Hairstyle'
         '404':
           description: Hairstyle was not found
     delete:
@@ -437,7 +437,7 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/Hairstyle'
+                $ref: '#/components/schemas/Hairstyle'
         '404':
           description: Hairstyle was not found
   /makeup:
@@ -447,7 +447,7 @@ paths:
       summary: Makeup variations list
       responses:
         '200':
-          description: List may be empty 
+          description: List may be empty
           content:
             application/json:
               schema:
@@ -470,7 +470,7 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/Makeup'
+                $ref: '#/components/schemas/Makeup'
     put:
       tags:
         - makeup
@@ -487,7 +487,7 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/Makeup'
+                $ref: '#/components/schemas/Makeup'
         '404':
           description: Makeup was not found
     delete:
@@ -506,7 +506,7 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/Makeup'
+                $ref: '#/components/schemas/Makeup'
         '404':
           description: Makeup was not found
   /jewelry:
@@ -516,7 +516,7 @@ paths:
       summary: Jewelry list
       responses:
         '200':
-          description: List may be empty 
+          description: List may be empty
           content:
             application/json:
               schema:
@@ -539,7 +539,7 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/Jewelry'
+                $ref: '#/components/schemas/Jewelry'
     put:
       tags:
         - jewelry
@@ -556,7 +556,7 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/Jewelry'
+                $ref: '#/components/schemas/Jewelry'
         '404':
           description: Jewelry was not found
     delete:
@@ -575,9 +575,52 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/Jewelry'
+                $ref: '#/components/schemas/Jewelry'
         '404':
           description: Jewelry was not found
+  /{itemType}/{itemId}/image:
+    post:
+      summary: Add or delete image by item ID
+      parameters:
+        - name: itemType
+          in: path
+          description: Type of item
+          required: true
+          schema:
+            type: string
+            enum:
+              - top
+              - bottom
+              - shoes
+              - hairstyle
+              - makeup
+              - jewelry
+        - name: itemId
+          in: path
+          description: ID of item linked to image
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  description: If empty, image for this item will be cleared
+                  type: string
+                  format: binary
+              required:
+                - file
+        required: true
+      responses:
+        '200':
+          description: Return path to new image file (like /upload/98aaecf85b21498c9069fecc0c195a58.jpg) or success message after image removing
+        '400':
+          description: Invalid file extension. Allowed extensions is jpg, jpeg, png, gif
+        '404':
+          description: Item not found
 components:
   schemas:
     FullLook:
