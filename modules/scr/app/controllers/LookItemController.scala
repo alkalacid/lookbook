@@ -7,11 +7,12 @@ import play.api.libs.Files
 import play.api.libs.Files.TemporaryFile
 import play.api.libs.json.{Json, Reads, Writes}
 import play.api.mvc.{Action, AnyContent, Controller, MultipartFormData}
+import utils.Constants
 import utils.ItemNotFoundException
 
-import java.io.File
+import java.io.{File, FileInputStream}
 import java.nio.file.Paths
-import java.util.UUID
+import java.util.{Base64, UUID}
 import scala.language.implicitConversions
 
 abstract class LookItemController[Entity <: LookBookItem, Repository <: CrudRepository[String, Entity]]
@@ -58,10 +59,9 @@ abstract class LookItemController[Entity <: LookBookItem, Repository <: CrudRepo
         .file("file")
         .map { image =>
 
-          val allowedExtensions = List("jpg", "jpeg", "png", "gif")
           val extension = image.filename.split("\\.").last
 
-          if (!allowedExtensions.contains(extension)) {
+          if (!Constants.allowedExtensions.contains(extension)) {
             BadRequest(s"Invalid file extension: $extension. Allowed extensions: jpg, jpeg, png, gif")
           } else {
             try {
@@ -80,16 +80,37 @@ abstract class LookItemController[Entity <: LookBookItem, Repository <: CrudRepo
         }
   }
 
+  def getBase64Image(entityId: String): Action[AnyContent] = Action {
+
+    val imageName = repository.find(entityId) match {
+      case Some(entity) => entity.image
+      case None => throw new ItemNotFoundException("Item not found")
+    }
+
+    val file = Paths.get(Constants.projectRoot + imageName).toFile
+    if (file.exists) {
+      val inputStream = new FileInputStream(file)
+      val bytesArray = new Array[Byte](file.length.toInt)
+
+      inputStream.read(bytesArray)
+      inputStream.close()
+
+      val fileExtension = file.getName.split("\\.").last
+      val result = "data:image/" + fileExtension + ";base64," + Base64.getEncoder.encodeToString(bytesArray)
+      Ok(result)
+
+    } else NotFound("File not found")
+  }
+
   private def addImage(extension: String, entityId: String, image: TemporaryFile): String = {
     val generatedFilename = "/upload/" + UUID.randomUUID.toString.replaceAll("-", "") + "." + extension
 
     repository.find(entityId) match {
       case Some(entity) => repository.update(setImageName(entity, generatedFilename))
-      case None => throw new ItemNotFoundException("Item was not found")
+      case None => throw new ItemNotFoundException("Item not found")
     }
 
-    val projectRoot = new File(".").getCanonicalPath
-    val path = Paths.get(projectRoot + generatedFilename).toFile
+    val path = Paths.get(Constants.projectRoot + generatedFilename).toFile
     image.moveTo(path, replace = false)
 
     generatedFilename
@@ -100,10 +121,9 @@ abstract class LookItemController[Entity <: LookBookItem, Repository <: CrudRepo
       case Some(entity) =>
         repository.update(setImageName(entity, ""))
         entity.image
-      case None => throw new ItemNotFoundException("Item was not found")
+      case None => throw new ItemNotFoundException("Item not found")
     }
-    val projectRoot = new File(".").getCanonicalPath
-    val path = Paths.get(projectRoot + imageName).toFile
+    val path = Paths.get(Constants.projectRoot + imageName).toFile
     if (path.delete()) {
       "Image deleted"
     } else {
